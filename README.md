@@ -298,17 +298,17 @@ const registrationSchema = s.object({
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please open an issue or submit a pull request on GitHub.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License
 
 ## Support
 
-- 🐛 [Report Issues](https://github.com/your-org/structlm/issues)
-- 💡 [Feature Requests](https://github.com/your-org/structlm/discussions)
-- 📖 [Documentation](https://github.com/your-org/structlm/wiki)
+- 🐛 [Report Issues](https://github.com/nadeesha/structlm/issues)
+- 💡 [Feature Requests](https://github.com/nadeesha/structlm/discussions)
+- 📖 [Documentation](https://github.com/nadeesha/structlm)
 
 ---
 
