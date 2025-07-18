@@ -1,7 +1,7 @@
 {
   "name": "structlm",
   "version": "1.0.0",
-  "description": "",
+  "description": "Structured output generation and data parsing tool geared towards LLMs",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -15,6 +15,14 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nadeesha/structlm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nadeesha/structlm/issues"
+  },
+  "homepage": "https://github.com/nadeesha/structlm",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
@@ -22,9 +30,9 @@
     "test": "node --import tsx --test src/test/*.test.ts",
     "test:watch": "node --import tsx --test --watch src/test/*.test.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["llm", "ai", "schema", "typescript", "validation", "structured-output", "openai", "anthropic", "claude", "gpt"],
+  "author": "Nadeesha Cabral",
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@types/node": "^24.0.13",
