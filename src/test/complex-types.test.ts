@@ -24,7 +24,7 @@ describe('Complex Types', () => {
 
     test('should support validation', () => {
       const schema = s.array(s.string()).validate(arr => arr.length > 0);
-      assert.strictEqual(schema.toString(), '[string]');
+      assert.strictEqual(schema.toString(), '[string] /* arr=>arr.length>0 */');
       assert.strictEqual(typeof schema.validationFn, 'function');
     });
 
@@ -67,7 +67,7 @@ describe('Complex Types', () => {
       const schema = s.object({
         name: s.string()
       }).validate(obj => obj.name.length > 0);
-      assert.strictEqual(schema.toString(), '{ name: string }');
+      assert.strictEqual(schema.toString(), '{ name: string } /* obj=>obj.name.length>0 */');
       assert.strictEqual(typeof schema.validationFn, 'function');
     });
 

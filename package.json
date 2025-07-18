@@ -30,7 +30,8 @@
     "test": "node --import tsx --test src/test/*.test.ts",
     "test:watch": "node --import tsx --test --watch src/test/*.test.ts",
     "benchmark:complex": "node --import tsx src/benchmarks/sonnet/complex-object.ts",
-    "benchmark:simple": "node --import tsx src/benchmarks/sonnet/simple-object.ts"
+    "benchmark:simple": "node --import tsx src/benchmarks/sonnet/simple-object.ts",
+    "benchmark:validation-hints": "node --import tsx src/benchmarks/sonnet/validation-hints.ts"
   },
   "keywords": [
     "llm",

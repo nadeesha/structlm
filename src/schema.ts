@@ -2,19 +2,34 @@ import { Schema } from './types';
 
 export class StringSchema extends Schema<string> {
   toString(): string {
-    return 'string';
+    const baseType = 'string';
+    if (this.validationFn) {
+      const fnString = this.validationFn.toString();
+      return `${baseType} /* ${fnString} */`;
+    }
+    return baseType;
   }
 }
 
 export class NumberSchema extends Schema<number> {
   toString(): string {
-    return 'number';
+    const baseType = 'number';
+    if (this.validationFn) {
+      const fnString = this.validationFn.toString();
+      return `${baseType} /* ${fnString} */`;
+    }
+    return baseType;
   }
 }
 
 export class BooleanSchema extends Schema<boolean> {
   toString(): string {
-    return 'boolean';
+    const baseType = 'boolean';
+    if (this.validationFn) {
+      const fnString = this.validationFn.toString();
+      return `${baseType} /* ${fnString} */`;
+    }
+    return baseType;
   }
 }
 
@@ -24,7 +39,12 @@ export class ArraySchema<T> extends Schema<T[]> {
   }
   
   toString(): string {
-    return `[${this.itemSchema.toString()}]`;
+    const baseType = `[${this.itemSchema.toString()}]`;
+    if (this.validationFn) {
+      const fnString = this.validationFn.toString();
+      return `${baseType} /* ${fnString} */`;
+    }
+    return baseType;
   }
 }
 
@@ -37,7 +57,13 @@ export class ObjectSchema<T extends Record<string, any>> extends Schema<T> {
     const entries = Object.entries(this.shape).map(([key, schema]) => {
       return `${key}: ${(schema as Schema).toString()}`;
     });
-    return `{ ${entries.join(', ')} }`;
+    const baseType = `{ ${entries.join(', ')} }`;
+    
+    if (this.validationFn) {
+      const fnString = this.validationFn.toString();
+      return `${baseType} /* ${fnString} */`;
+    }
+    return baseType;
   }
 }
 

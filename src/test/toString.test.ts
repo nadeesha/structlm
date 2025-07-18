@@ -16,10 +16,10 @@ describe('toString() method', () => {
       assert.strictEqual(s.boolean().toString(), 'boolean');
     });
 
-    test('should return same string even with validation', () => {
-      assert.strictEqual(s.string().validate(s => s.length > 0).toString(), 'string');
-      assert.strictEqual(s.number().validate(n => n > 0).toString(), 'number');
-      assert.strictEqual(s.boolean().validate(b => b === true).toString(), 'boolean');
+    test('should include validation function in toString when present', () => {
+      assert.strictEqual(s.string().validate(s => s.length > 0).toString(), 'string /* s => s.length > 0 */');
+      assert.strictEqual(s.number().validate(n => n > 0).toString(), 'number /* n => n > 0 */');
+      assert.strictEqual(s.boolean().validate(b => b === true).toString(), 'boolean /* b => b === true */');
     });
   });
 

@@ -11,7 +11,7 @@ describe('Basic Types', () => {
 
     test('should support validation', () => {
       const emailSchema = s.string().validate(email => email.includes('@'));
-      assert.strictEqual(emailSchema.toString(), 'string');
+      assert.strictEqual(emailSchema.toString(), 'string /* email=>email.includes("@") */');
       assert.strictEqual(typeof emailSchema.validationFn, 'function');
     });
 
@@ -30,7 +30,7 @@ describe('Basic Types', () => {
 
     test('should support validation', () => {
       const positiveSchema = s.number().validate(n => n > 0);
-      assert.strictEqual(positiveSchema.toString(), 'number');
+      assert.strictEqual(positiveSchema.toString(), 'number /* n=>n>0 */');
       assert.strictEqual(typeof positiveSchema.validationFn, 'function');
     });
 
@@ -49,7 +49,7 @@ describe('Basic Types', () => {
 
     test('should support validation', () => {
       const trueOnlySchema = s.boolean().validate(b => b === true);
-      assert.strictEqual(trueOnlySchema.toString(), 'boolean');
+      assert.strictEqual(trueOnlySchema.toString(), 'boolean /* b=>b===true */');
       assert.strictEqual(typeof trueOnlySchema.validationFn, 'function');
     });
 

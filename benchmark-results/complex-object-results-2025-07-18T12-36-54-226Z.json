@@ -1,0 +1,36 @@
+{
+  "jsonSchema": {
+    "method": "json-schema",
+    "totalIterations": 1,
+    "successfulIterations": 1,
+    "failedIterations": 0,
+    "averageInputTokens": 1336,
+    "averageOutputTokens": 490,
+    "totalInputTokens": 1336,
+    "totalOutputTokens": 490,
+    "accuracyScore": 64,
+    "averageResponseTime": 8390,
+    "errors": []
+  },
+  "structlm": {
+    "method": "structlm",
+    "totalIterations": 1,
+    "successfulIterations": 1,
+    "failedIterations": 0,
+    "averageInputTokens": 496,
+    "averageOutputTokens": 491,
+    "totalInputTokens": 496,
+    "totalOutputTokens": 491,
+    "accuracyScore": 64,
+    "averageResponseTime": 8458,
+    "errors": []
+  },
+  "tokenSavings": {
+    "inputTokens": 840,
+    "outputTokens": -1,
+    "totalTokens": 839,
+    "percentageSaved": 46
+  },
+  "accuracyDifference": 0,
+  "performanceDifference": -68
+}
