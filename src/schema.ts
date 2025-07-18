@@ -41,8 +41,14 @@ export class ObjectSchema<T extends Record<string, any>> extends Schema<T> {
   }
 }
 
+// Type helper to infer the output type from a schema shape
+type InferObjectType<T extends Record<string, Schema<any>>> = {
+  [K in keyof T]: T[K] extends Schema<infer U> ? U : never;
+};
+
 export const string = () => new StringSchema();
 export const number = () => new NumberSchema();
 export const boolean = () => new BooleanSchema();
-export const array = <T>(itemSchema: Schema<T>) => new ArraySchema(itemSchema);
-export const object = <T extends Record<string, any>>(shape: { [K in keyof T]: Schema<T[K]> }) => new ObjectSchema(shape);
+export const array = <T>(itemSchema: Schema<T>) => new ArraySchema<T>(itemSchema);
+export const object = <T extends Record<string, Schema<any>>>(shape: T) => 
+  new ObjectSchema<InferObjectType<T>>(shape as { [K in keyof InferObjectType<T>]: Schema<InferObjectType<T>[K]> });
