@@ -1,5 +1,10 @@
 #!/usr/bin/env node
-import { runComparison, printResults, BenchmarkConfig } from './benchmark-runner.js';
+import { config } from 'dotenv';
+import { runComparison, printResults, BenchmarkConfig } from './simple-object-runner.js';
+import { resolve } from 'path';
+
+// Load environment variables from .env file in the same directory
+config({ path: resolve(import.meta.dirname, '.env') });
 
 const sampleInputTexts = [
   `Here are some books from our catalog:
@@ -37,7 +42,7 @@ async function main() {
     process.exit(1);
   }
 
-  const iterations = parseInt(process.env.BENCHMARK_ITERATIONS || '10');
+  const iterations = parseInt(process.env.BENCHMARK_ITERATIONS || '20');
   
   const config: BenchmarkConfig = {
     iterations,
@@ -54,7 +59,7 @@ async function main() {
     
     // Save results to file
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `benchmark-results-${timestamp}.json`;
+    const filename = `simple-object-results-${timestamp}.json`;
     
     await import('fs').then(fs => {
       fs.writeFileSync(filename, JSON.stringify(results, null, 2));

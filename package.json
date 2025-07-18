@@ -28,9 +28,22 @@
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test src/test/*.test.ts",
-    "test:watch": "node --import tsx --test --watch src/test/*.test.ts"
+    "test:watch": "node --import tsx --test --watch src/test/*.test.ts",
+    "benchmark:complex": "node --import tsx src/benchmarks/sonnet/complex-object.ts",
+    "benchmark:simple": "node --import tsx src/benchmarks/sonnet/simple-object.ts"
   },
-  "keywords": ["llm", "ai", "schema", "typescript", "validation", "structured-output", "openai", "anthropic", "claude", "gpt"],
+  "keywords": [
+    "llm",
+    "ai",
+    "schema",
+    "typescript",
+    "validation",
+    "structured-output",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt"
+  ],
   "author": "Nadeesha Cabral",
   "license": "MIT",
   "type": "module",
@@ -39,5 +52,9 @@
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "dotenv": "^17.2.0"
   }
 }

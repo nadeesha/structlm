@@ -33,14 +33,20 @@ The benchmark uses the book catalog example from the [Anthropic Tool Use documen
    npm install
    ```
 
-2. **Set your Anthropic API key**:
+2. **Configure environment variables**:
+   Edit the `.env` file in `src/benchmarks/sonnet/.env`:
    ```bash
-   export ANTHROPIC_API_KEY=your_api_key_here
+   # Required: Your Anthropic API key
+   ANTHROPIC_API_KEY=your_api_key_here
+   
+   # Optional: Number of iterations per benchmark (default: 10)
+   BENCHMARK_ITERATIONS=20
    ```
 
-3. **Optional: Configure iterations**:
+3. **Alternative: Use environment variables directly**:
    ```bash
-   export BENCHMARK_ITERATIONS=20  # Default is 10
+   export ANTHROPIC_API_KEY=your_api_key_here
+   export BENCHMARK_ITERATIONS=20  # Optional
    ```
 
 ## Running the Benchmark
@@ -180,9 +186,14 @@ The benchmark includes a 1-second delay between requests to respect API rate lim
 ### Common Issues
 
 1. **API Key Not Found**
-   ```bash
-   export ANTHROPIC_API_KEY=your_key_here
-   ```
+   - Edit the `.env` file and add your API key:
+     ```bash
+     ANTHROPIC_API_KEY=your_key_here
+     ```
+   - Or set it as an environment variable:
+     ```bash
+     export ANTHROPIC_API_KEY=your_key_here
+     ```
 
 2. **Rate Limiting**
    - Reduce iterations or increase delay
