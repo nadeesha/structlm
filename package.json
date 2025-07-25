@@ -31,7 +31,12 @@
     "test:watch": "node --import tsx --test --watch src/test/*.test.ts",
     "benchmark:complex": "node --import tsx src/benchmarks/sonnet/complex-object.ts",
     "benchmark:simple": "node --import tsx src/benchmarks/sonnet/simple-object.ts",
-    "benchmark:validation-hints": "node --import tsx src/benchmarks/sonnet/validation-hints.ts"
+    "benchmark:validation-hints": "node --import tsx src/benchmarks/sonnet/validation-hints.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "prepare": "husky"
   },
   "keywords": [
     "llm",
@@ -50,9 +55,22 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^24.0.13",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",

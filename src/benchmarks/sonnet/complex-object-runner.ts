@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { s, Infer } from '../../index.ts';
+import { s, Infer } from '../../index';
 
 export interface BenchmarkConfig {
   iterations: number;
@@ -18,20 +18,22 @@ export const orderSchema = s.object({
       city: s.string(),
       state: s.string(),
       zip_code: s.string(),
-      country: s.string()
-    })
+      country: s.string(),
+    }),
   }),
   order_date: s.string(),
   status: s.string(),
-  items: s.array(s.object({
-    product_id: s.string(),
-    name: s.string(),
-    category: s.string(),
-    price: s.number(),
-    quantity: s.number(),
-    discount_percent: s.number(),
-    subtotal: s.number()
-  })),
+  items: s.array(
+    s.object({
+      product_id: s.string(),
+      name: s.string(),
+      category: s.string(),
+      price: s.number(),
+      quantity: s.number(),
+      discount_percent: s.number(),
+      subtotal: s.number(),
+    })
+  ),
   payment: s.object({
     method: s.string(),
     transaction_id: s.string(),
@@ -40,98 +42,122 @@ export const orderSchema = s.object({
       city: s.string(),
       state: s.string(),
       zip_code: s.string(),
-      country: s.string()
-    })
+      country: s.string(),
+    }),
   }),
   shipping: s.object({
     carrier: s.string(),
     tracking_number: s.string(),
     estimated_delivery: s.string(),
-    shipping_cost: s.number()
+    shipping_cost: s.number(),
   }),
   total_amount: s.number(),
   tax_amount: s.number(),
-  discount_amount: s.number()
+  discount_amount: s.number(),
 });
 
 export type OrderType = Infer<typeof orderSchema>;
 
 // JSON Schema equivalent
 export const jsonSchemaDefinition = {
-  type: "object",
+  type: 'object',
   properties: {
-    order_id: { type: "string" },
+    order_id: { type: 'string' },
     customer: {
-      type: "object",
+      type: 'object',
       properties: {
-        name: { type: "string" },
-        email: { type: "string" },
+        name: { type: 'string' },
+        email: { type: 'string' },
         address: {
-          type: "object",
+          type: 'object',
           properties: {
-            street: { type: "string" },
-            city: { type: "string" },
-            state: { type: "string" },
-            zip_code: { type: "string" },
-            country: { type: "string" }
+            street: { type: 'string' },
+            city: { type: 'string' },
+            state: { type: 'string' },
+            zip_code: { type: 'string' },
+            country: { type: 'string' },
           },
-          required: ["street", "city", "state", "zip_code", "country"]
-        }
-      },
-      required: ["name", "email", "address"]
-    },
-    order_date: { type: "string" },
-    status: { type: "string" },
-    items: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          product_id: { type: "string" },
-          name: { type: "string" },
-          category: { type: "string" },
-          price: { type: "number" },
-          quantity: { type: "number" },
-          discount_percent: { type: "number" },
-          subtotal: { type: "number" }
+          required: ['street', 'city', 'state', 'zip_code', 'country'],
         },
-        required: ["product_id", "name", "category", "price", "quantity", "discount_percent", "subtotal"]
-      }
+      },
+      required: ['name', 'email', 'address'],
+    },
+    order_date: { type: 'string' },
+    status: { type: 'string' },
+    items: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          product_id: { type: 'string' },
+          name: { type: 'string' },
+          category: { type: 'string' },
+          price: { type: 'number' },
+          quantity: { type: 'number' },
+          discount_percent: { type: 'number' },
+          subtotal: { type: 'number' },
+        },
+        required: [
+          'product_id',
+          'name',
+          'category',
+          'price',
+          'quantity',
+          'discount_percent',
+          'subtotal',
+        ],
+      },
     },
     payment: {
-      type: "object",
+      type: 'object',
       properties: {
-        method: { type: "string" },
-        transaction_id: { type: "string" },
+        method: { type: 'string' },
+        transaction_id: { type: 'string' },
         billing_address: {
-          type: "object",
+          type: 'object',
           properties: {
-            street: { type: "string" },
-            city: { type: "string" },
-            state: { type: "string" },
-            zip_code: { type: "string" },
-            country: { type: "string" }
+            street: { type: 'string' },
+            city: { type: 'string' },
+            state: { type: 'string' },
+            zip_code: { type: 'string' },
+            country: { type: 'string' },
           },
-          required: ["street", "city", "state", "zip_code", "country"]
-        }
+          required: ['street', 'city', 'state', 'zip_code', 'country'],
+        },
       },
-      required: ["method", "transaction_id", "billing_address"]
+      required: ['method', 'transaction_id', 'billing_address'],
     },
     shipping: {
-      type: "object",
+      type: 'object',
       properties: {
-        carrier: { type: "string" },
-        tracking_number: { type: "string" },
-        estimated_delivery: { type: "string" },
-        shipping_cost: { type: "number" }
+        carrier: { type: 'string' },
+        tracking_number: { type: 'string' },
+        estimated_delivery: { type: 'string' },
+        shipping_cost: { type: 'number' },
       },
-      required: ["carrier", "tracking_number", "estimated_delivery", "shipping_cost"]
+      required: [
+        'carrier',
+        'tracking_number',
+        'estimated_delivery',
+        'shipping_cost',
+      ],
     },
-    total_amount: { type: "number" },
-    tax_amount: { type: "number" },
-    discount_amount: { type: "number" }
+    total_amount: { type: 'number' },
+    tax_amount: { type: 'number' },
+    discount_amount: { type: 'number' },
   },
-  required: ["order_id", "customer", "order_date", "status", "items", "payment", "shipping", "total_amount", "tax_amount", "discount_amount"]
+  required: [
+    'order_id',
+    'customer',
+    'order_date',
+    'status',
+    'items',
+    'payment',
+    'shipping',
+    'total_amount',
+    'tax_amount',
+    'discount_amount',
+  ],
 };
 
 export interface BenchmarkResult {
@@ -161,14 +187,29 @@ export interface ComparisonResult {
   performanceDifference: number;
 }
 
-function validateOrder(result: any): { isValid: boolean; score: number; errors: string[] } {
+function validateOrder(result: any): {
+  isValid: boolean;
+  score: number;
+  errors: string[];
+} {
   const errors: string[] = [];
   let score = 0;
 
   // Check required top-level fields
-  const requiredFields = ['order_id', 'customer', 'order_date', 'status', 'items', 'payment', 'shipping', 'total_amount', 'tax_amount', 'discount_amount'];
+  const requiredFields = [
+    'order_id',
+    'customer',
+    'order_date',
+    'status',
+    'items',
+    'payment',
+    'shipping',
+    'total_amount',
+    'tax_amount',
+    'discount_amount',
+  ];
   const fieldPoints = 100 / requiredFields.length;
-  
+
   for (const field of requiredFields) {
     if (result[field] !== undefined && result[field] !== null) {
       score += fieldPoints * 0.5; // 50% for presence
@@ -188,9 +229,12 @@ function validateOrder(result: any): { isValid: boolean; score: number; errors: 
         errors.push(`Missing customer.${field}`);
       }
     }
-    
+
     // Validate customer address
-    if (result.customer.address && typeof result.customer.address === 'object') {
+    if (
+      result.customer.address &&
+      typeof result.customer.address === 'object'
+    ) {
       const addressFields = ['street', 'city', 'state', 'zip_code', 'country'];
       for (const field of addressFields) {
         if (result.customer.address[field] !== undefined) {
@@ -206,10 +250,18 @@ function validateOrder(result: any): { isValid: boolean; score: number; errors: 
   if (result.items && Array.isArray(result.items)) {
     if (result.items.length > 0) {
       score += fieldPoints * 0.2;
-      
+
       // Check first item structure
       const item = result.items[0];
-      const itemFields = ['product_id', 'name', 'category', 'price', 'quantity', 'discount_percent', 'subtotal'];
+      const itemFields = [
+        'product_id',
+        'name',
+        'category',
+        'price',
+        'quantity',
+        'discount_percent',
+        'subtotal',
+      ];
       for (const field of itemFields) {
         if (item[field] !== undefined) {
           score += fieldPoints * 0.02;
@@ -236,7 +288,12 @@ function validateOrder(result: any): { isValid: boolean; score: number; errors: 
 
   // Validate shipping object
   if (result.shipping && typeof result.shipping === 'object') {
-    const shippingFields = ['carrier', 'tracking_number', 'estimated_delivery', 'shipping_cost'];
+    const shippingFields = [
+      'carrier',
+      'tracking_number',
+      'estimated_delivery',
+      'shipping_cost',
+    ];
     for (const field of shippingFields) {
       if (result.shipping[field] !== undefined) {
         score += fieldPoints * 0.05;
@@ -251,10 +308,10 @@ function validateOrder(result: any): { isValid: boolean; score: number; errors: 
   if (typeof result.tax_amount === 'number') score += fieldPoints * 0.1;
   if (typeof result.discount_amount === 'number') score += fieldPoints * 0.1;
 
-  return { 
-    isValid: errors.length === 0, 
-    score: Math.round(Math.min(score, 100)), 
-    errors 
+  return {
+    isValid: errors.length === 0,
+    score: Math.round(Math.min(score, 100)),
+    errors,
   };
 }
 
@@ -267,19 +324,19 @@ async function runJsonSchemaMethod(
   outputTokens: number;
 }> {
   const response = await client.messages.create({
-    model: "claude-3-5-sonnet-20241022",
+    model: 'claude-3-5-sonnet-20241022',
     max_tokens: 2000,
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: `Extract order information from the following text and format it according to the JSON schema.
 
 Input text: ${inputText}
 
 Please respond with a JSON object that matches this schema:
-${JSON.stringify(jsonSchemaDefinition, null, 2)}`
-      }
-    ]
+${JSON.stringify(jsonSchemaDefinition, null, 2)}`,
+      },
+    ],
   });
 
   const content = response.content[0];
@@ -290,10 +347,9 @@ ${JSON.stringify(jsonSchemaDefinition, null, 2)}`
   let result: any;
   try {
     // Extract JSON from the response (in case it's wrapped in markdown)
-    const jsonMatch = content.text.match(/```json\n([\s\S]*?)\n```/) || 
-                     content.text.match(/```\n([\s\S]*?)\n```/) ||
-                     [null, content.text];
-    
+    const jsonMatch = content.text.match(/```json\n([\s\S]*?)\n```/) ||
+      content.text.match(/```\n([\s\S]*?)\n```/) || [null, content.text];
+
     const jsonText = jsonMatch[1] || content.text;
     result = JSON.parse(jsonText.trim());
   } catch (error) {
@@ -303,7 +359,7 @@ ${JSON.stringify(jsonSchemaDefinition, null, 2)}`
   return {
     result,
     inputTokens: response.usage.input_tokens,
-    outputTokens: response.usage.output_tokens
+    outputTokens: response.usage.output_tokens,
   };
 }
 
@@ -316,11 +372,11 @@ async function runStructLMMethod(
   outputTokens: number;
 }> {
   const response = await client.messages.create({
-    model: "claude-3-5-sonnet-20241022",
+    model: 'claude-3-5-sonnet-20241022',
     max_tokens: 2000,
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: `Extract order information from the following text and format it according to the schema.
 
 Input text: ${inputText}
@@ -328,9 +384,9 @@ Input text: ${inputText}
 Please respond with a JSON object that matches this structure:
 ${orderSchema.stringify()}
 
-Return only the JSON object, no additional text.`
-      }
-    ]
+Return only the JSON object, no additional text.`,
+      },
+    ],
   });
 
   const content = response.content[0];
@@ -341,10 +397,9 @@ Return only the JSON object, no additional text.`
   let result: OrderType;
   try {
     // Extract JSON from the response (in case it's wrapped in markdown)
-    const jsonMatch = content.text.match(/```json\n([\s\S]*?)\n```/) || 
-                     content.text.match(/```\n([\s\S]*?)\n```/) ||
-                     [null, content.text];
-    
+    const jsonMatch = content.text.match(/```json\n([\s\S]*?)\n```/) ||
+      content.text.match(/```\n([\s\S]*?)\n```/) || [null, content.text];
+
     const jsonText = jsonMatch[1] || content.text;
     result = JSON.parse(jsonText.trim());
   } catch (error) {
@@ -354,7 +409,7 @@ Return only the JSON object, no additional text.`
   return {
     result,
     inputTokens: response.usage.input_tokens,
-    outputTokens: response.usage.output_tokens
+    outputTokens: response.usage.output_tokens,
   };
 }
 
@@ -371,29 +426,29 @@ async function runSingleBenchmark(
   error?: string;
 }> {
   const startTime = Date.now();
-  
+
   try {
     if (method === 'json-schema') {
       const result = await runJsonSchemaMethod(client, inputText);
       const validation = validateOrder(result.result);
-      
+
       return {
         success: true,
         inputTokens: result.inputTokens,
         outputTokens: result.outputTokens,
         responseTime: Date.now() - startTime,
-        accuracyScore: validation.score
+        accuracyScore: validation.score,
       };
     } else {
       const result = await runStructLMMethod(client, inputText);
       const validation = validateOrder(result.result);
-      
+
       return {
         success: true,
         inputTokens: result.inputTokens,
         outputTokens: result.outputTokens,
         responseTime: Date.now() - startTime,
-        accuracyScore: validation.score
+        accuracyScore: validation.score,
       };
     }
   } catch (error) {
@@ -403,7 +458,7 @@ async function runSingleBenchmark(
       outputTokens: 0,
       responseTime: Date.now() - startTime,
       accuracyScore: 0,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
@@ -413,7 +468,7 @@ export async function runBenchmark(
   config: BenchmarkConfig
 ): Promise<BenchmarkResult> {
   const client = new Anthropic({
-    apiKey: config.apiKey
+    apiKey: config.apiKey,
   });
 
   const results: BenchmarkResult = {
@@ -427,7 +482,7 @@ export async function runBenchmark(
     totalOutputTokens: 0,
     accuracyScore: 0,
     averageResponseTime: 0,
-    errors: []
+    errors: [],
   };
 
   const inputTokens: number[] = [];
@@ -435,7 +490,9 @@ export async function runBenchmark(
   const accuracyScores: number[] = [];
   const responseTimes: number[] = [];
 
-  console.log(`Running ${method} benchmark with ${config.iterations} iterations...`);
+  console.log(
+    `Running ${method} benchmark with ${config.iterations} iterations...`
+  );
 
   for (let i = 0; i < config.iterations; i++) {
     const inputText = config.inputTexts[i % config.inputTexts.length];
@@ -443,10 +500,10 @@ export async function runBenchmark(
       throw new Error('No input text available');
     }
     console.log(`  Iteration ${i + 1}/${config.iterations} (${method})`);
-    
+
     const result = await runSingleBenchmark(client, method, inputText);
     results.totalIterations++;
-    
+
     if (result.success) {
       results.successfulIterations++;
       inputTokens.push(result.inputTokens);
@@ -459,51 +516,79 @@ export async function runBenchmark(
         results.errors.push(`Iteration ${i + 1}: ${result.error}`);
       }
     }
-    
+
     // Small delay to avoid rate limiting
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   // Calculate averages
   if (inputTokens.length > 0) {
-    results.totalInputTokens = inputTokens.reduce((sum, tokens) => sum + tokens, 0);
-    results.totalOutputTokens = outputTokens.reduce((sum, tokens) => sum + tokens, 0);
-    results.averageInputTokens = Math.round(results.totalInputTokens / inputTokens.length);
-    results.averageOutputTokens = Math.round(results.totalOutputTokens / outputTokens.length);
-    results.accuracyScore = Math.round(accuracyScores.reduce((sum, score) => sum + score, 0) / accuracyScores.length);
-    results.averageResponseTime = Math.round(responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length);
+    results.totalInputTokens = inputTokens.reduce(
+      (sum, tokens) => sum + tokens,
+      0
+    );
+    results.totalOutputTokens = outputTokens.reduce(
+      (sum, tokens) => sum + tokens,
+      0
+    );
+    results.averageInputTokens = Math.round(
+      results.totalInputTokens / inputTokens.length
+    );
+    results.averageOutputTokens = Math.round(
+      results.totalOutputTokens / outputTokens.length
+    );
+    results.accuracyScore = Math.round(
+      accuracyScores.reduce((sum, score) => sum + score, 0) /
+        accuracyScores.length
+    );
+    results.averageResponseTime = Math.round(
+      responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
+    );
   }
 
   return results;
 }
 
-export async function runComparison(config: BenchmarkConfig): Promise<ComparisonResult> {
+export async function runComparison(
+  config: BenchmarkConfig
+): Promise<ComparisonResult> {
   console.log('Starting benchmark comparison...\n');
-  
+
   const [jsonSchemaResult, structlmResult] = await Promise.all([
     runBenchmark('json-schema', config),
-    runBenchmark('structlm', config)
+    runBenchmark('structlm', config),
   ]);
 
-  const totalJsonTokens = jsonSchemaResult.totalInputTokens + jsonSchemaResult.totalOutputTokens;
-  const totalStructLMTokens = structlmResult.totalInputTokens + structlmResult.totalOutputTokens;
-  
+  const totalJsonTokens =
+    jsonSchemaResult.totalInputTokens + jsonSchemaResult.totalOutputTokens;
+  const totalStructLMTokens =
+    structlmResult.totalInputTokens + structlmResult.totalOutputTokens;
+
   const tokenSavings = {
-    inputTokens: jsonSchemaResult.totalInputTokens - structlmResult.totalInputTokens,
-    outputTokens: jsonSchemaResult.totalOutputTokens - structlmResult.totalOutputTokens,
+    inputTokens:
+      jsonSchemaResult.totalInputTokens - structlmResult.totalInputTokens,
+    outputTokens:
+      jsonSchemaResult.totalOutputTokens - structlmResult.totalOutputTokens,
     totalTokens: totalJsonTokens - totalStructLMTokens,
-    percentageSaved: totalJsonTokens > 0 ? Math.round(((totalJsonTokens - totalStructLMTokens) / totalJsonTokens) * 100) : 0
+    percentageSaved:
+      totalJsonTokens > 0
+        ? Math.round(
+            ((totalJsonTokens - totalStructLMTokens) / totalJsonTokens) * 100
+          )
+        : 0,
   };
 
-  const accuracyDifference = structlmResult.accuracyScore - jsonSchemaResult.accuracyScore;
-  const performanceDifference = jsonSchemaResult.averageResponseTime - structlmResult.averageResponseTime;
+  const accuracyDifference =
+    structlmResult.accuracyScore - jsonSchemaResult.accuracyScore;
+  const performanceDifference =
+    jsonSchemaResult.averageResponseTime - structlmResult.averageResponseTime;
 
   return {
     jsonSchema: jsonSchemaResult,
     structlm: structlmResult,
     tokenSavings,
     accuracyDifference,
-    performanceDifference
+    performanceDifference,
   };
 }
 
@@ -511,39 +596,83 @@ export function printResults(comparison: ComparisonResult): void {
   console.log('\n' + '='.repeat(60));
   console.log('BENCHMARK RESULTS');
   console.log('='.repeat(60));
-  
+
   console.log('\nJSON Schema Results:');
-  console.log(`  Successful: ${comparison.jsonSchema.successfulIterations}/${comparison.jsonSchema.totalIterations}`);
-  console.log(`  Average Input Tokens: ${comparison.jsonSchema.averageInputTokens}`);
-  console.log(`  Average Output Tokens: ${comparison.jsonSchema.averageOutputTokens}`);
-  console.log(`  Total Tokens: ${comparison.jsonSchema.totalInputTokens + comparison.jsonSchema.totalOutputTokens}`);
+  console.log(
+    `  Successful: ${comparison.jsonSchema.successfulIterations}/${comparison.jsonSchema.totalIterations}`
+  );
+  console.log(
+    `  Average Input Tokens: ${comparison.jsonSchema.averageInputTokens}`
+  );
+  console.log(
+    `  Average Output Tokens: ${comparison.jsonSchema.averageOutputTokens}`
+  );
+  console.log(
+    `  Total Tokens: ${
+      comparison.jsonSchema.totalInputTokens +
+      comparison.jsonSchema.totalOutputTokens
+    }`
+  );
   console.log(`  Accuracy Score: ${comparison.jsonSchema.accuracyScore}%`);
-  console.log(`  Average Response Time: ${comparison.jsonSchema.averageResponseTime}ms`);
-  
+  console.log(
+    `  Average Response Time: ${comparison.jsonSchema.averageResponseTime}ms`
+  );
+
   console.log('\nStructLM Results:');
-  console.log(`  Successful: ${comparison.structlm.successfulIterations}/${comparison.structlm.totalIterations}`);
-  console.log(`  Average Input Tokens: ${comparison.structlm.averageInputTokens}`);
-  console.log(`  Average Output Tokens: ${comparison.structlm.averageOutputTokens}`);
-  console.log(`  Total Tokens: ${comparison.structlm.totalInputTokens + comparison.structlm.totalOutputTokens}`);
+  console.log(
+    `  Successful: ${comparison.structlm.successfulIterations}/${comparison.structlm.totalIterations}`
+  );
+  console.log(
+    `  Average Input Tokens: ${comparison.structlm.averageInputTokens}`
+  );
+  console.log(
+    `  Average Output Tokens: ${comparison.structlm.averageOutputTokens}`
+  );
+  console.log(
+    `  Total Tokens: ${
+      comparison.structlm.totalInputTokens +
+      comparison.structlm.totalOutputTokens
+    }`
+  );
   console.log(`  Accuracy Score: ${comparison.structlm.accuracyScore}%`);
-  console.log(`  Average Response Time: ${comparison.structlm.averageResponseTime}ms`);
-  
+  console.log(
+    `  Average Response Time: ${comparison.structlm.averageResponseTime}ms`
+  );
+
   console.log('\nComparison:');
-  console.log(`  Token Savings: ${comparison.tokenSavings.totalTokens} (${comparison.tokenSavings.percentageSaved}%)`);
-  console.log(`  Input Token Difference: ${comparison.tokenSavings.inputTokens > 0 ? '+' : ''}${comparison.tokenSavings.inputTokens}`);
-  console.log(`  Output Token Difference: ${comparison.tokenSavings.outputTokens > 0 ? '+' : ''}${comparison.tokenSavings.outputTokens}`);
-  console.log(`  Accuracy Difference: ${comparison.accuracyDifference > 0 ? '+' : ''}${comparison.accuracyDifference}%`);
-  console.log(`  Performance Difference: ${comparison.performanceDifference > 0 ? '+' : ''}${comparison.performanceDifference}ms`);
-  
+  console.log(
+    `  Token Savings: ${comparison.tokenSavings.totalTokens} (${comparison.tokenSavings.percentageSaved}%)`
+  );
+  console.log(
+    `  Input Token Difference: ${
+      comparison.tokenSavings.inputTokens > 0 ? '+' : ''
+    }${comparison.tokenSavings.inputTokens}`
+  );
+  console.log(
+    `  Output Token Difference: ${
+      comparison.tokenSavings.outputTokens > 0 ? '+' : ''
+    }${comparison.tokenSavings.outputTokens}`
+  );
+  console.log(
+    `  Accuracy Difference: ${comparison.accuracyDifference > 0 ? '+' : ''}${
+      comparison.accuracyDifference
+    }%`
+  );
+  console.log(
+    `  Performance Difference: ${
+      comparison.performanceDifference > 0 ? '+' : ''
+    }${comparison.performanceDifference}ms`
+  );
+
   if (comparison.jsonSchema.errors.length > 0) {
     console.log('\nJSON Schema Errors:');
     comparison.jsonSchema.errors.forEach(error => console.log(`  - ${error}`));
   }
-  
+
   if (comparison.structlm.errors.length > 0) {
     console.log('\nStructLM Errors:');
     comparison.structlm.errors.forEach(error => console.log(`  - ${error}`));
   }
-  
+
   console.log('\n' + '='.repeat(60));
 }
