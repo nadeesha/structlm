@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s, Infer } from '../index.js';
+import { s, Infer } from '../index.ts';
 
 describe('Type Inference', () => {
   test('should infer string type from s.string()', () => {
@@ -12,7 +12,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value, 'string');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), 'string');
+    assert.strictEqual(schema.stringify(), 'string');
   });
 
   test('should infer number type from s.number()', () => {
@@ -24,7 +24,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value, 'number');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), 'number');
+    assert.strictEqual(schema.stringify(), 'number');
   });
 
   test('should infer boolean type from s.boolean()', () => {
@@ -36,7 +36,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value, 'boolean');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), 'boolean');
+    assert.strictEqual(schema.stringify(), 'boolean');
   });
 
   test('should infer string[] type from s.array(s.string())', () => {
@@ -49,7 +49,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value[0], 'string');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), '[string]');
+    assert.strictEqual(schema.stringify(), '[string]');
   });
 
   test('should infer number[] type from s.array(s.number())', () => {
@@ -62,7 +62,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value[0], 'number');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), '[number]');
+    assert.strictEqual(schema.stringify(), '[number]');
   });
 
   test('should infer simple object type from s.object()', () => {
@@ -81,7 +81,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value.age, 'number');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), '{ name: string, age: number }');
+    assert.strictEqual(schema.stringify(), '{ name: string, age: number }');
   });
 
   test('should infer nested object type', () => {
@@ -107,7 +107,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value.count, 'number');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), '{ user: { name: string, active: boolean }, count: number }');
+    assert.strictEqual(schema.stringify(), '{ user: { name: string, active: boolean }, count: number }');
   });
 
   test('should infer object with array property type', () => {
@@ -127,7 +127,7 @@ describe('Type Inference', () => {
     assert.strictEqual(typeof value.tags[0], 'string');
     
     // Verify the schema works
-    assert.strictEqual(schema.toString(), '{ name: string, tags: [string] }');
+    assert.strictEqual(schema.stringify(), '{ name: string, tags: [string] }');
   });
 
   test('should infer complex nested types', () => {
@@ -163,6 +163,6 @@ describe('Type Inference', () => {
     
     // Verify the schema works
     const expected = '{ users: [{ id: number, profile: { name: string, active: boolean }, tags: [string] }] }';
-    assert.strictEqual(schema.toString(), expected);
+    assert.strictEqual(schema.stringify(), expected);
   });
 });

@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { s, Infer } from '../../index.js';
+import { s, Infer } from '../../index.ts';
 
 export interface BenchmarkConfig {
   iterations: number;
@@ -283,7 +283,7 @@ async function runStructLMMethodWithValidation(
 Input text: ${inputText}
 
 Please respond with a JSON object that matches this structure:
-${userProfileSchemaWithValidation.toString()}
+${userProfileSchemaWithValidation.stringify()}
 
 Return only the JSON object, no additional text.`
       }

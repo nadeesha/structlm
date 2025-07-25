@@ -36,8 +36,12 @@ const userSchema = s.object({
 });
 
 // Generate schema description for LLM
-console.log(userSchema.toString());
+console.log(userSchema.stringify());
 // Output: "{ name: { first: string, last: string }, age: number, active: boolean, tags: [string] }"
+
+// Parse and validate JSON data
+const userData = userSchema.parse('{"name":{"first":"John","last":"Doe"},"age":30,"active":true,"tags":["developer","typescript"]}');
+// Returns: { name: { first: "John", last: "Doe" }, age: 30, active: true, tags: ["developer", "typescript"] }
 ```
 
 ## API Reference
@@ -49,7 +53,10 @@ Creates a string schema.
 
 ```typescript
 const nameSchema = s.string();
-console.log(nameSchema.toString()); // "string"
+console.log(nameSchema.stringify()); // "string"
+
+// Parse and validate a string
+const name = nameSchema.parse('"John"'); // "John"
 ```
 
 #### `s.number()`
@@ -57,7 +64,10 @@ Creates a number schema.
 
 ```typescript
 const ageSchema = s.number();
-console.log(ageSchema.toString()); // "number"
+console.log(ageSchema.stringify()); // "number"
+
+// Parse and validate a number
+const age = ageSchema.parse('25'); // 25
 ```
 
 #### `s.boolean()`
@@ -65,7 +75,10 @@ Creates a boolean schema.
 
 ```typescript
 const activeSchema = s.boolean();
-console.log(activeSchema.toString()); // "boolean"
+console.log(activeSchema.stringify()); // "boolean"
+
+// Parse and validate a boolean
+const isActive = activeSchema.parse('true'); // true
 ```
 
 ### Complex Types
@@ -75,14 +88,21 @@ Creates an array schema with specified item type.
 
 ```typescript
 const numbersSchema = s.array(s.number());
-console.log(numbersSchema.toString()); // "[number]"
+console.log(numbersSchema.stringify()); // "[number]"
+
+// Parse and validate an array
+const numbers = numbersSchema.parse('[1, 2, 3, 4]'); // [1, 2, 3, 4]
 
 const usersSchema = s.array(s.object({
   name: s.string(),
   age: s.number()
 }));
-console.log(usersSchema.toString()); 
+console.log(usersSchema.stringify()); 
 // "[ { name: string, age: number } ]"
+
+// Parse complex array
+const users = usersSchema.parse('[{"name":"John","age":30},{"name":"Jane","age":25}]');
+// Returns: [{ name: "John", age: 30 }, { name: "Jane", age: 25 }]
 ```
 
 #### `s.object(shape)`
@@ -99,8 +119,20 @@ const personSchema = s.object({
   })
 });
 
-console.log(personSchema.toString());
+console.log(personSchema.stringify());
 // "{ name: string, age: number, address: { street: string, city: string, zipCode: string } }"
+
+// Parse and validate an object
+const person = personSchema.parse(`{
+  "name": "John Doe",
+  "age": 30,
+  "address": {
+    "street": "123 Main St",
+    "city": "Anytown",
+    "zipCode": "12345"
+  }
+}`);
+// Returns typed object with validation
 ```
 
 ### Validation
@@ -139,7 +171,7 @@ const extractUserInfoSchema = s.object({
 
 const prompt = `
 Extract user information from the following text and return it in this format:
-${extractUserInfoSchema.toString()}
+${extractUserInfoSchema.stringify()}
 
 Text: "John Doe is 25 years old, email john@example.com, knows JavaScript and Python. Jane Smith, age 30, jane@test.com, skilled in React and Node.js."
 `;
@@ -164,7 +196,7 @@ const analysisSchema = s.object({
 
 const prompt = `
 Analyze this meeting transcript and return structured data in this format:
-${analysisSchema.toString()}
+${analysisSchema.stringify()}
 
 Transcript: "..."
 `;
@@ -194,7 +226,7 @@ const productSchema = s.object({
 // Use in your AI prompt
 const systemPrompt = `
 You are a product information extractor. Always return data in this exact format:
-${productSchema.toString()}
+${productSchema.stringify()}
 
 Ensure all validations are met:
 - Price must be positive
@@ -255,7 +287,7 @@ const apiResponseSchema = s.object({
   })
 });
 
-console.log(apiResponseSchema.toString());
+console.log(apiResponseSchema.stringify());
 // Outputs clean, readable schema description
 ```
 
@@ -294,7 +326,7 @@ const registrationSchema = s.object({
 - **LLM-Optimized**: The proprietary object notation is specifically designed to be clear and unambiguous for AI models
 - **Lightweight**: Zero dependencies, focused solely on schema definition and output generation
 - **Developer-Friendly**: Clean API, full TypeScript support, and comprehensive validation
-- **Flexible**: Works with any LLM or AI service that accepts structured prompts
+- **Flexible**: Works with any LLM or AI service. (Reliability may vary)
 
 ## Contributing
 
@@ -309,7 +341,3 @@ MIT License
 - 🐛 [Report Issues](https://github.com/nadeesha/structlm/issues)
 - 💡 [Feature Requests](https://github.com/nadeesha/structlm/discussions)
 - 📖 [Documentation](https://github.com/nadeesha/structlm)
-
----
-
-Built with ❤️ for the AI development community.

@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s } from '../index.js';
+import { s } from '../index.ts';
 
 describe('Validation', () => {
   describe('Basic validation', () => {

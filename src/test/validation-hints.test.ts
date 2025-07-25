@@ -1,27 +1,27 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s } from '../index.js';
+import { s } from '../index.ts';
 
-describe('Validation Hints in toString()', () => {
+describe('Validation Hints in stringify()', () => {
   describe('Basic types with validation', () => {
     test('should include validation function for string schema', () => {
       const emailSchema = s.string().validate(value => value.includes('@'));
-      assert.strictEqual(emailSchema.toString(), 'string /* value => value.includes("@") */');
+      assert.strictEqual(emailSchema.stringify(), 'string /* value => value.includes(\'@\') */');
     });
 
     test('should include validation function for number schema', () => {
       const positiveSchema = s.number().validate(value => value > 0);
-      assert.strictEqual(positiveSchema.toString(), 'number /* value => value > 0 */');
+      assert.strictEqual(positiveSchema.stringify(), 'number /* value => value > 0 */');
     });
 
     test('should include validation function for boolean schema', () => {
       const trueSchema = s.boolean().validate(value => value === true);
-      assert.strictEqual(trueSchema.toString(), 'boolean /* value => value === true */');
+      assert.strictEqual(trueSchema.stringify(), 'boolean /* value => value === true */');
     });
 
     test('should include validation function for array schema', () => {
       const nonEmptyArray = s.array(s.string()).validate(arr => arr.length > 0);
-      assert.strictEqual(nonEmptyArray.toString(), '[string] /* arr => arr.length > 0 */');
+      assert.strictEqual(nonEmptyArray.stringify(), '[string] /* arr => arr.length > 0 */');
     });
 
     test('should include validation function for object schema', () => {
@@ -30,7 +30,7 @@ describe('Validation Hints in toString()', () => {
         age: s.number()
       }).validate(obj => obj.name.length > 0);
       
-      assert.strictEqual(userSchema.toString(), '{ name: string, age: number } /* obj => obj.name.length > 0 */');
+      assert.strictEqual(userSchema.stringify(), '{ name: string, age: number } /* obj => obj.name.length > 0 */');
     });
   });
 
@@ -40,10 +40,10 @@ describe('Validation Hints in toString()', () => {
         return value.includes('@') && value.includes('.') && value.length > 5;
       });
       
-      const result = complexEmailSchema.toString();
+      const result = complexEmailSchema.stringify();
       assert.ok(result.startsWith('string /* '));
-      assert.ok(result.includes('value.includes("@")'));
-      assert.ok(result.includes('value.includes(".")'));
+      assert.ok(result.includes('value.includes(\'@\')'));
+      assert.ok(result.includes('value.includes(\'.\')'));
       assert.ok(result.includes('value.length>5'));
       assert.ok(result.endsWith(' */'));
     });
@@ -51,7 +51,7 @@ describe('Validation Hints in toString()', () => {
     test('should stringify complex number validations', () => {
       const rangeSchema = s.number().validate(value => value >= 0 && value <= 100);
       
-      const result = rangeSchema.toString();
+      const result = rangeSchema.stringify();
       assert.ok(result.startsWith('number /* '));
       assert.ok(result.includes('value>=0'));
       assert.ok(result.includes('value<=100'));
@@ -63,7 +63,7 @@ describe('Validation Hints in toString()', () => {
         return arr.length > 0 && arr.every(item => item.length > 0);
       });
       
-      const result = complexArraySchema.toString();
+      const result = complexArraySchema.stringify();
       assert.ok(result.startsWith('[string] /* '));
       assert.ok(result.includes('arr.length>0'));
       assert.ok(result.includes('arr.every'));
@@ -73,7 +73,7 @@ describe('Validation Hints in toString()', () => {
     test('should stringify regex validations', () => {
       const regexSchema = s.string().validate(value => /^[A-Z]/.test(value));
       
-      const result = regexSchema.toString();
+      const result = regexSchema.stringify();
       assert.ok(result.startsWith('string /* '));
       assert.ok(result.includes('/^[A-Z]/'));
       assert.ok(result.includes('.test(value)'));
@@ -89,9 +89,9 @@ describe('Validation Hints in toString()', () => {
         age: s.number().validate(value => value >= 18)
       });
       
-      const result = userSchema.toString();
+      const result = userSchema.stringify();
       assert.ok(result.includes('name: string /* value=>value.length>=2 */'));
-      assert.ok(result.includes('email: string /* value=>value.includes("@") */'));
+      assert.ok(result.includes('email: string /* value=>value.includes(\'@\') */'));
       assert.ok(result.includes('age: number /* value=>value>=18 */'));
     });
 
@@ -101,8 +101,8 @@ describe('Validation Hints in toString()', () => {
         count: s.number().validate(value => value > 0)
       })).validate(arr => arr.length > 0);
       
-      const result = arraySchema.toString();
-      assert.ok(result.includes('id: string /* value=>value.startsWith("ID-") */'));
+      const result = arraySchema.stringify();
+      assert.ok(result.includes('id: string /* value=>value.startsWith(\'ID-\') */'));
       assert.ok(result.includes('count: number /* value=>value>0 */'));
       assert.ok(result.includes('}] /* arr=>arr.length>0 */'));
     });
@@ -117,7 +117,7 @@ describe('Validation Hints in toString()', () => {
         })
       });
       
-      const result = deepSchema.toString();
+      const result = deepSchema.stringify();
       assert.ok(result.includes('name: string /* value=>value.length>0 */'));
       assert.ok(result.includes('age: number /* value=>value>=0 */'));
       assert.ok(result.includes('} /* profile=>profile.name!=="admin" */'));
@@ -126,11 +126,11 @@ describe('Validation Hints in toString()', () => {
 
   describe('No validation function', () => {
     test('should not include validation hints when no validation function is provided', () => {
-      assert.strictEqual(s.string().toString(), 'string');
-      assert.strictEqual(s.number().toString(), 'number');
-      assert.strictEqual(s.boolean().toString(), 'boolean');
-      assert.strictEqual(s.array(s.string()).toString(), '[string]');
-      assert.strictEqual(s.object({ name: s.string() }).toString(), '{ name: string }');
+      assert.strictEqual(s.string().stringify(), 'string');
+      assert.strictEqual(s.number().stringify(), 'number');
+      assert.strictEqual(s.boolean().stringify(), 'boolean');
+      assert.strictEqual(s.array(s.string()).stringify(), '[string]');
+      assert.strictEqual(s.object({ name: s.string() }).stringify(), '{ name: string }');
     });
   });
 
@@ -144,7 +144,7 @@ describe('Validation Hints in toString()', () => {
         termsAccepted: s.boolean().validate(value => value === true)
       });
       
-      const result = userRegistrationSchema.toString();
+      const result = userRegistrationSchema.stringify();
       
       // Check that validation hints are present
       assert.ok(result.includes('username: string /* '));
@@ -174,15 +174,15 @@ describe('Validation Hints in toString()', () => {
         status: s.string().validate(value => ['pending', 'processing', 'shipped', 'delivered'].includes(value))
       });
       
-      const result = orderSchema.toString();
+      const result = orderSchema.stringify();
       
       // Check validation hints are present
-      assert.ok(result.includes('orderId: string /* value => value.startsWith("ORD-") */'));
+      assert.ok(result.includes('orderId: string /* value => value.startsWith(\'ORD-\') */'));
       assert.ok(result.includes('productId: string /* value => value.length > 0 */'));
       assert.ok(result.includes('quantity: number /* value => value > 0 && Math.floor(value) === value */'));
       assert.ok(result.includes('price: number /* value => value > 0 */'));
       assert.ok(result.includes('total: number /* value => value > 0 */'));
-      assert.ok(result.includes('status: string /* value => ["pending","processing","shipped","delivered"].includes(value) */'));
+      assert.ok(result.includes('status: string /* value => [\'pending\', \'processing\', \'shipped\', \'delivered\'].includes(value) */'));
       assert.ok(result.includes('}] /* arr => arr.length > 0 */'));
     });
   });
@@ -190,21 +190,21 @@ describe('Validation Hints in toString()', () => {
   describe('Function stringification edge cases', () => {
     test('should handle functions with special characters', () => {
       const schema = s.string().validate(value => value.includes('$') && value.includes('€'));
-      const result = schema.toString();
-      assert.ok(result.includes('value.includes("$")'));
-      assert.ok(result.includes('value.includes("\\u20AC")'));
+      const result = schema.stringify();
+      assert.ok(result.includes('value.includes(\'$\')'));
+      assert.ok(result.includes('value.includes(\'€\')'));
     });
 
     test('should handle functions with quotes', () => {
       const schema = s.string().validate(value => value.includes('"') || value.includes("'"));
-      const result = schema.toString();
+      const result = schema.stringify();
       assert.ok(result.includes('string /* '));
       assert.ok(result.endsWith(' */'));
     });
 
     test('should handle functions with regex patterns', () => {
       const schema = s.string().validate(value => /^\d{4}-\d{2}-\d{2}$/.test(value));
-      const result = schema.toString();
+      const result = schema.stringify();
       assert.ok(result.includes('/^\\d{4}-\\d{2}-\\d{2}$/'));
     });
   });

@@ -1,17 +1,17 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s } from '../index.js';
+import { s } from '../index.ts';
 
 describe('Complex Types', () => {
   describe('s.array()', () => {
     test('should create an array schema with string items', () => {
       const schema = s.array(s.string());
-      assert.strictEqual(schema.toString(), '[string]');
+      assert.strictEqual(schema.stringify(), '[string]');
     });
 
     test('should create an array schema with number items', () => {
       const schema = s.array(s.number());
-      assert.strictEqual(schema.toString(), '[number]');
+      assert.strictEqual(schema.stringify(), '[number]');
     });
 
     test('should create an array schema with object items', () => {
@@ -19,12 +19,12 @@ describe('Complex Types', () => {
         name: s.string(),
         age: s.number()
       }));
-      assert.strictEqual(schema.toString(), '[{ name: string, age: number }]');
+      assert.strictEqual(schema.stringify(), '[{ name: string, age: number }]');
     });
 
     test('should support validation', () => {
       const schema = s.array(s.string()).validate(arr => arr.length > 0);
-      assert.strictEqual(schema.toString(), '[string] /* arr=>arr.length>0 */');
+      assert.strictEqual(schema.stringify(), '[string] /* arr=>arr.length>0 */');
       assert.strictEqual(typeof schema.validationFn, 'function');
     });
 
@@ -41,7 +41,7 @@ describe('Complex Types', () => {
         name: s.string(),
         age: s.number()
       });
-      assert.strictEqual(schema.toString(), '{ name: string, age: number }');
+      assert.strictEqual(schema.stringify(), '{ name: string, age: number }');
     });
 
     test('should create a nested object schema', () => {
@@ -52,7 +52,7 @@ describe('Complex Types', () => {
         }),
         active: s.boolean()
       });
-      assert.strictEqual(schema.toString(), '{ user: { name: string, age: number }, active: boolean }');
+      assert.strictEqual(schema.stringify(), '{ user: { name: string, age: number }, active: boolean }');
     });
 
     test('should create an object with array property', () => {
@@ -60,14 +60,14 @@ describe('Complex Types', () => {
         name: s.string(),
         tags: s.array(s.string())
       });
-      assert.strictEqual(schema.toString(), '{ name: string, tags: [string] }');
+      assert.strictEqual(schema.stringify(), '{ name: string, tags: [string] }');
     });
 
     test('should support validation', () => {
       const schema = s.object({
         name: s.string()
       }).validate(obj => obj.name.length > 0);
-      assert.strictEqual(schema.toString(), '{ name: string } /* obj=>obj.name.length>0 */');
+      assert.strictEqual(schema.stringify(), '{ name: string } /* obj=>obj.name.length>0 */');
       assert.strictEqual(typeof schema.validationFn, 'function');
     });
 
@@ -99,7 +99,7 @@ describe('Complex Types', () => {
       });
       
       const expected = '{ user: { profile: { name: { first: string, last: string }, contact: { email: string, phone: string } }, permissions: [string] } }';
-      assert.strictEqual(schema.toString(), expected);
+      assert.strictEqual(schema.stringify(), expected);
     });
 
     test('should handle arrays of complex objects', () => {
@@ -113,7 +113,7 @@ describe('Complex Types', () => {
       }));
       
       const expected = '[{ id: number, user: { name: string, active: boolean }, tags: [string] }]';
-      assert.strictEqual(schema.toString(), expected);
+      assert.strictEqual(schema.stringify(), expected);
     });
   });
 });

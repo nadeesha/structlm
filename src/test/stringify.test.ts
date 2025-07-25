@@ -1,39 +1,39 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s } from '../index.js';
+import { s } from '../index.ts';
 
-describe('toString() method', () => {
+describe('stringify() method', () => {
   describe('Basic types', () => {
     test('should return "string" for string schema', () => {
-      assert.strictEqual(s.string().toString(), 'string');
+      assert.strictEqual(s.string().stringify(), 'string');
     });
 
     test('should return "number" for number schema', () => {
-      assert.strictEqual(s.number().toString(), 'number');
+      assert.strictEqual(s.number().stringify(), 'number');
     });
 
     test('should return "boolean" for boolean schema', () => {
-      assert.strictEqual(s.boolean().toString(), 'boolean');
+      assert.strictEqual(s.boolean().stringify(), 'boolean');
     });
 
     test('should include validation function in toString when present', () => {
-      assert.strictEqual(s.string().validate(s => s.length > 0).toString(), 'string /* s => s.length > 0 */');
-      assert.strictEqual(s.number().validate(n => n > 0).toString(), 'number /* n => n > 0 */');
-      assert.strictEqual(s.boolean().validate(b => b === true).toString(), 'boolean /* b => b === true */');
+      assert.strictEqual(s.string().validate(s => s.length > 0).stringify(), 'string /* s => s.length > 0 */');
+      assert.strictEqual(s.number().validate(n => n > 0).stringify(), 'number /* n => n > 0 */');
+      assert.strictEqual(s.boolean().validate(b => b === true).stringify(), 'boolean /* b => b === true */');
     });
   });
 
   describe('Array types', () => {
     test('should return correct format for string array', () => {
-      assert.strictEqual(s.array(s.string()).toString(), '[string]');
+      assert.strictEqual(s.array(s.string()).stringify(), '[string]');
     });
 
     test('should return correct format for number array', () => {
-      assert.strictEqual(s.array(s.number()).toString(), '[number]');
+      assert.strictEqual(s.array(s.number()).stringify(), '[number]');
     });
 
     test('should return correct format for boolean array', () => {
-      assert.strictEqual(s.array(s.boolean()).toString(), '[boolean]');
+      assert.strictEqual(s.array(s.boolean()).stringify(), '[boolean]');
     });
 
     test('should return correct format for object array', () => {
@@ -41,12 +41,12 @@ describe('toString() method', () => {
         name: s.string(),
         age: s.number()
       });
-      assert.strictEqual(s.array(objectSchema).toString(), '[{ name: string, age: number }]');
+      assert.strictEqual(s.array(objectSchema).stringify(), '[{ name: string, age: number }]');
     });
 
     test('should return correct format for nested arrays', () => {
       const nestedArray = s.array(s.array(s.string()));
-      assert.strictEqual(nestedArray.toString(), '[[string]]');
+      assert.strictEqual(nestedArray.stringify(), '[[string]]');
     });
   });
 
@@ -56,7 +56,7 @@ describe('toString() method', () => {
         name: s.string(),
         age: s.number()
       });
-      assert.strictEqual(schema.toString(), '{ name: string, age: number }');
+      assert.strictEqual(schema.stringify(), '{ name: string, age: number }');
     });
 
     test('should return correct format for object with boolean', () => {
@@ -64,7 +64,7 @@ describe('toString() method', () => {
         name: s.string(),
         active: s.boolean()
       });
-      assert.strictEqual(schema.toString(), '{ name: string, active: boolean }');
+      assert.strictEqual(schema.stringify(), '{ name: string, active: boolean }');
     });
 
     test('should return correct format for object with array', () => {
@@ -72,7 +72,7 @@ describe('toString() method', () => {
         name: s.string(),
         tags: s.array(s.string())
       });
-      assert.strictEqual(schema.toString(), '{ name: string, tags: [string] }');
+      assert.strictEqual(schema.stringify(), '{ name: string, tags: [string] }');
     });
 
     test('should return correct format for nested objects', () => {
@@ -83,7 +83,7 @@ describe('toString() method', () => {
         }),
         active: s.boolean()
       });
-      assert.strictEqual(schema.toString(), '{ user: { name: string, age: number }, active: boolean }');
+      assert.strictEqual(schema.stringify(), '{ user: { name: string, age: number }, active: boolean }');
     });
   });
 
@@ -103,7 +103,7 @@ describe('toString() method', () => {
       });
       
       const expected = '{ user: { profile: { name: { first: string, last: string }, age: number }, active: boolean } }';
-      assert.strictEqual(schema.toString(), expected);
+      assert.strictEqual(schema.stringify(), expected);
     });
 
     test('should handle arrays of complex objects', () => {
@@ -120,7 +120,7 @@ describe('toString() method', () => {
       }));
       
       const expected = '[{ id: number, user: { name: string, contact: { email: string, phone: string } }, tags: [string] }]';
-      assert.strictEqual(schema.toString(), expected);
+      assert.strictEqual(schema.stringify(), expected);
     });
 
     test('should handle objects with arrays of objects', () => {
@@ -138,7 +138,7 @@ describe('toString() method', () => {
       });
       
       const expected = '{ name: string, users: [{ id: number, name: string, active: boolean }], metadata: { count: number, updated: string } }';
-      assert.strictEqual(schema.toString(), expected);
+      assert.strictEqual(schema.stringify(), expected);
     });
 
     test('should handle mixed nested arrays and objects', () => {
@@ -154,7 +154,7 @@ describe('toString() method', () => {
       });
       
       const expected = '{ data: [[{ value: number, label: string }]], config: { options: [string], enabled: boolean } }';
-      assert.strictEqual(schema.toString(), expected);
+      assert.strictEqual(schema.stringify(), expected);
     });
   });
 
@@ -177,7 +177,7 @@ describe('toString() method', () => {
       });
       
       const expected = '{ id: number, name: { first: string, last: string }, email: string, age: number, active: boolean, tags: [string], preferences: { theme: string, notifications: boolean } }';
-      assert.strictEqual(userSchema.toString(), expected);
+      assert.strictEqual(userSchema.stringify(), expected);
     });
 
     test('should generate correct notation for API response schema', () => {
@@ -196,7 +196,7 @@ describe('toString() method', () => {
       });
       
       const expected = '{ status: string, data: [{ id: number, title: string, completed: boolean }], pagination: { page: number, limit: number, total: number } }';
-      assert.strictEqual(apiSchema.toString(), expected);
+      assert.strictEqual(apiSchema.stringify(), expected);
     });
   });
 });

@@ -5,7 +5,8 @@ export type ValidationFunction<T> = (value: T) => boolean;
 export abstract class Schema<T = unknown> {
   public validationFn?: ValidationFunction<T>;
 
-  abstract toString(): string;
+  abstract stringify(): string;
+  abstract parse(jsonString: string): T;
 
   validate(fn: ValidationFunction<T>): this {
     this.validationFn = fn;
