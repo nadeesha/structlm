@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 import { config } from 'dotenv';
-import { runComparison, printResults, BenchmarkConfig } from './complex-object-runner.js';
+import {
+  runComparison,
+  printResults,
+  BenchmarkConfig,
+} from './complex-object-runner.js';
 import { resolve } from 'path';
 
 // Load environment variables from .env file in the same directory
@@ -26,7 +30,7 @@ const sampleInputTexts = [
   Tax: $193.45
   Shipping: $15.99
   Total: $2,628.53`,
-  
+
   `E-commerce Order Details:
   Order ID: ORD-2024-002
   Date: March 16, 2024
@@ -58,7 +62,7 @@ const sampleInputTexts = [
   Tax Amount: $25.67
   Shipping Fee: $8.99
   Final Total: $317.61`,
-  
+
   `ORDER CONFIRMATION #ORD-2024-003
   
   Thank you for your purchase, Mike Davis!
@@ -92,7 +96,7 @@ const sampleInputTexts = [
   Tax: $148.57
   Shipping: $24.99
   GRAND TOTAL: $1,985.59`,
-  
+
   `Purchase Receipt - Order #ORD-2024-004
   
   Customer: Emily Wilson <emily.wilson@email.com>
@@ -127,7 +131,7 @@ const sampleInputTexts = [
   Sales Tax: $32.94
   Shipping: $0.00
   Order Total: $464.95`,
-  
+
   `JSON Order Data:
   {
     "order_id": "ORD-2024-005",
@@ -184,7 +188,7 @@ const sampleInputTexts = [
     "total_amount": 1167.83,
     "tax_amount": 64.76,
     "discount_amount": 107.88
-  }`
+  }`,
 ];
 
 async function main() {
@@ -195,29 +199,30 @@ async function main() {
   }
 
   const iterations = parseInt(process.env.BENCHMARK_ITERATIONS || '5');
-  
+
   const config: BenchmarkConfig = {
     iterations,
     apiKey,
-    inputTexts: sampleInputTexts
+    inputTexts: sampleInputTexts,
   };
 
   try {
-    console.log(`Running benchmark with ${iterations} iterations per method...`);
+    console.log(
+      `Running benchmark with ${iterations} iterations per method...`
+    );
     console.log(`Using ${sampleInputTexts.length} different input texts\n`);
-    
+
     const results = await runComparison(config);
     printResults(results);
-    
+
     // Save results to file
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `complex-object-results-${timestamp}.json`;
-    
+    const filename = `benchmark-results/complex-object-results-${timestamp}.json`;
+
     await import('fs').then(fs => {
       fs.writeFileSync(filename, JSON.stringify(results, null, 2));
       console.log(`\nResults saved to: ${filename}`);
     });
-    
   } catch (error) {
     console.error('Benchmark failed:', error);
     process.exit(1);
