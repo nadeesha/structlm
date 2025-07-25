@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s } from '../index.ts';
+import { s } from '../index';
 
 describe('Basic Types', () => {
   describe('s.string()', () => {
@@ -11,7 +11,10 @@ describe('Basic Types', () => {
 
     test('should support validation', () => {
       const emailSchema = s.string().validate(email => email.includes('@'));
-      assert.strictEqual(emailSchema.stringify(), 'string /* email=>email.includes("@") */');
+      assert.strictEqual(
+        emailSchema.stringify(),
+        'string /* email=>email.includes("@") */'
+      );
       assert.strictEqual(typeof emailSchema.validationFn, 'function');
     });
 
@@ -49,7 +52,10 @@ describe('Basic Types', () => {
 
     test('should support validation', () => {
       const trueOnlySchema = s.boolean().validate(b => b === true);
-      assert.strictEqual(trueOnlySchema.stringify(), 'boolean /* b=>b===true */');
+      assert.strictEqual(
+        trueOnlySchema.stringify(),
+        'boolean /* b=>b===true */'
+      );
       assert.strictEqual(typeof trueOnlySchema.validationFn, 'function');
     });
 

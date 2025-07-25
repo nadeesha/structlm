@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { s, Infer } from '../index.ts';
+import { s, Infer } from '../index';
 
 describe('Type Inference', () => {
   test('should infer string type from s.string()', () => {
