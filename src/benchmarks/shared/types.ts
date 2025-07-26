@@ -8,6 +8,7 @@ export interface BenchmarkConfig {
 export interface ModelClient {
   generateResponse(
     prompt: string,
+
     maxTokens?: number
   ): Promise<{
     content: string;
@@ -29,6 +30,7 @@ export interface BenchmarkResult {
   accuracyScore: number;
   averageResponseTime: number;
   errors: string[];
+  sampleInputs: string[];
 }
 
 export interface ComparisonResult {

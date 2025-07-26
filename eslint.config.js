@@ -18,24 +18,39 @@ export default [
     },
     rules: {
       // TypeScript specific rules
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': 'off', // Disable base rule
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      
+
       // General rules
       'no-console': 'warn',
       'prefer-const': 'error',
       'no-var': 'error',
       'object-shorthand': 'error',
       'prefer-template': 'error',
-      
+
       // Turn off rules that conflict with prettier
       'no-mixed-spaces-and-tabs': 'off',
     },
   },
   {
-    files: ['**/*.test.ts', '**/benchmarks/**/*.ts'],
+    files: ['**/*.test.ts', 'src/benchmarks/**/*.ts'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        setTimeout: 'readonly',
+      },
+    },
     rules: {
       'no-console': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',

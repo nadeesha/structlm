@@ -7,6 +7,18 @@ import type {
 } from './types';
 import { calculateTokenSavings, extractJsonFromResponse } from './utils';
 
+// Type definitions for schema parameters
+interface JsonSchemaDefinition {
+  type: string;
+  properties?: Record<string, unknown>;
+  required?: string[];
+  [key: string]: unknown;
+}
+
+interface StructLMSchema {
+  stringify(): string;
+}
+
 export abstract class BaseBenchmarkRunner {
   protected client: ModelClient;
   protected modelName: string;
@@ -19,9 +31,10 @@ export abstract class BaseBenchmarkRunner {
   protected async runSingleBenchmark(
     method: 'json-schema' | 'structlm',
     inputText: string,
-    jsonSchemaDefinition: any,
-    structlmSchema: any,
-    validateFn: (result: any) => ValidationResult
+    jsonSchemaDefinition: JsonSchemaDefinition,
+    structlmSchema: StructLMSchema,
+
+    validateFn: (_result: unknown) => ValidationResult
   ): Promise<{
     success: boolean;
     inputTokens: number;
@@ -81,9 +94,10 @@ Return only the JSON object, no additional text.`;
   protected async runBenchmark(
     method: 'json-schema' | 'structlm',
     config: BenchmarkConfig,
-    jsonSchemaDefinition: any,
-    structlmSchema: any,
-    validateFn: (result: any) => ValidationResult
+    jsonSchemaDefinition: JsonSchemaDefinition,
+    structlmSchema: StructLMSchema,
+
+    validateFn: (_result: unknown) => ValidationResult
   ): Promise<BenchmarkResult> {
     const results: BenchmarkResult = {
       model: this.modelName,
@@ -98,6 +112,7 @@ Return only the JSON object, no additional text.`;
       accuracyScore: 0,
       averageResponseTime: 0,
       errors: [],
+      sampleInputs: [],
     };
 
     const inputTokens: number[] = [];
@@ -106,40 +121,68 @@ Return only the JSON object, no additional text.`;
     const responseTimes: number[] = [];
 
     console.log(
-      `Running ${method} benchmark with ${config.iterations} iterations...`
+      `Running ${method} benchmark with ${config.iterations} iterations in parallel...`
     );
 
-    for (let i = 0; i < config.iterations; i++) {
+    // Store sample inputs
+    results.sampleInputs = config.inputTexts.slice();
+
+    // Create all benchmark tasks
+    const benchmarkTasks = Array.from({ length: config.iterations }, (_, i) => {
       const inputText = config.inputTexts[i % config.inputTexts.length];
       if (!inputText) {
         throw new Error('No input text available');
       }
-      console.log(`  Iteration ${i + 1}/${config.iterations} (${method})`);
 
-      const result = await this.runSingleBenchmark(
+      return this.runSingleBenchmark(
         method,
         inputText,
         jsonSchemaDefinition,
         structlmSchema,
         validateFn
-      );
-      results.totalIterations++;
+      ).then(result => ({ iteration: i + 1, result, inputText }));
+    });
 
-      if (result.success) {
-        results.successfulIterations++;
-        inputTokens.push(result.inputTokens);
-        outputTokens.push(result.outputTokens);
-        accuracyScores.push(result.accuracyScore);
-        responseTimes.push(result.responseTime);
-      } else {
-        results.failedIterations++;
-        if (result.error) {
-          results.errors.push(`Iteration ${i + 1}: ${result.error}`);
+    // Run all benchmarks in parallel with concurrency limit
+    const batchSize = 5; // Limit concurrent requests
+
+    for (
+      let batchStart = 0;
+      batchStart < benchmarkTasks.length;
+      batchStart += batchSize
+    ) {
+      const batchEnd = Math.min(batchStart + batchSize, benchmarkTasks.length);
+      const batch = benchmarkTasks.slice(batchStart, batchEnd);
+      const batchIndex = Math.floor(batchStart / batchSize) + 1;
+      const totalBatches = Math.ceil(benchmarkTasks.length / batchSize);
+
+      console.log(
+        `  Processing batch ${batchIndex}/${totalBatches} (${method})`
+      );
+
+      const batchResults = await Promise.all(batch);
+
+      for (const { iteration, result } of batchResults) {
+        results.totalIterations++;
+
+        if (result.success) {
+          results.successfulIterations++;
+          inputTokens.push(result.inputTokens);
+          outputTokens.push(result.outputTokens);
+          accuracyScores.push(result.accuracyScore);
+          responseTimes.push(result.responseTime);
+        } else {
+          results.failedIterations++;
+          if (result.error) {
+            results.errors.push(`Iteration ${iteration}: ${result.error}`);
+          }
         }
       }
 
-      // Small delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Small delay between batches to avoid rate limiting
+      if (batchStart + batchSize < benchmarkTasks.length) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
     }
 
     // Calculate averages
@@ -173,12 +216,14 @@ Return only the JSON object, no additional text.`;
 
   public async runComparison(
     config: BenchmarkConfig,
-    jsonSchemaDefinition: any,
-    structlmSchema: any,
-    validateFn: (result: any) => ValidationResult
+    jsonSchemaDefinition: JsonSchemaDefinition,
+    structlmSchema: StructLMSchema,
+
+    validateFn: (_result: unknown) => ValidationResult
   ): Promise<ComparisonResult> {
     console.log(`Starting benchmark comparison for ${this.modelName}...\n`);
 
+    // Run both methods in parallel
     const [jsonSchemaResult, structlmResult] = await Promise.all([
       this.runBenchmark(
         'json-schema',

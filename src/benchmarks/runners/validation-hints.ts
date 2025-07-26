@@ -2,30 +2,30 @@
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import { BaseBenchmarkRunner } from '../shared/base-runner';
-import {
-  userProfileSchema,
-  userProfileJsonSchema,
-  UserProfileType,
-} from '../shared/schemas';
-import { printComparisonResults, saveResults } from '../shared/utils';
+import { userProfileSchema, userProfileJsonSchema } from '../shared/schemas';
+import { saveResults } from '../shared/utils';
 import { userProfileSampleInputs } from '../data/sample-inputs';
 import type { BenchmarkConfig, ValidationResult } from '../shared/types';
 
-// Model imports
-import { SonnetClient } from '../models/sonnet/client';
-import { sonnetConfig } from '../models/sonnet/config';
-import { Llama33Client } from '../models/llama33/client';
-import { llama33Config } from '../models/llama33/config';
-import { Phi4Client } from '../models/phi4/client';
-import { phi4Config } from '../models/phi4/config';
+// OpenRouter model imports
+import { OpenRouterClient } from '../models/openrouter/client';
+import { openRouterModels } from '../models/openrouter/config';
 
 // Load environment variables
-config({ path: resolve(import.meta.dirname, '../models/sonnet/.env') });
+config({ path: resolve(process.cwd(), '.env') });
 
-function validateUserProfile(result: any): ValidationResult {
+function validateUserProfile(result: unknown): ValidationResult {
   const errors: string[] = [];
   let score = 0;
   const maxScore = 100;
+
+  // Check if result is an object
+  if (!result || typeof result !== 'object') {
+    errors.push('Result must be an object');
+    return { isValid: false, score: 0, errors };
+  }
+
+  const resultObj = result as Record<string, unknown>;
 
   // Required top-level fields
   const requiredFields = [
@@ -44,7 +44,7 @@ function validateUserProfile(result: any): ValidationResult {
 
   let presentFields = 0;
   for (const field of requiredFields) {
-    if (result[field] !== undefined && result[field] !== null) {
+    if (resultObj[field] !== undefined && resultObj[field] !== null) {
       presentFields++;
     } else {
       errors.push(`Missing required field: ${field}`);
@@ -54,63 +54,72 @@ function validateUserProfile(result: any): ValidationResult {
   score += (presentFields / requiredFields.length) * baseScore;
 
   // Validate specific field types and constraints
-  if (result.id && typeof result.id === 'string' && result.id.length >= 3) {
+  if (
+    resultObj.id &&
+    typeof resultObj.id === 'string' &&
+    resultObj.id.length >= 3
+  ) {
     score += 4;
-  } else if (result.id) {
+  } else if (resultObj.id) {
     errors.push('Invalid id: must be string with length >= 3');
   }
 
   if (
-    result.username &&
-    typeof result.username === 'string' &&
-    result.username.length >= 2 &&
-    result.username.length <= 20
+    resultObj.username &&
+    typeof resultObj.username === 'string' &&
+    resultObj.username.length >= 2 &&
+    resultObj.username.length <= 20
   ) {
     score += 4;
-  } else if (result.username) {
+  } else if (resultObj.username) {
     errors.push('Invalid username: must be string with length 2-20');
   }
 
   if (
-    result.email &&
-    typeof result.email === 'string' &&
-    result.email.includes('@')
+    resultObj.email &&
+    typeof resultObj.email === 'string' &&
+    resultObj.email.includes('@')
   ) {
     score += 4;
-  } else if (result.email) {
+  } else if (resultObj.email) {
     errors.push('Invalid email: must contain @');
   }
 
   if (
-    result.age &&
-    typeof result.age === 'number' &&
-    result.age >= 13 &&
-    result.age <= 120
+    resultObj.age &&
+    typeof resultObj.age === 'number' &&
+    resultObj.age >= 13 &&
+    resultObj.age <= 120
   ) {
     score += 4;
-  } else if (result.age) {
+  } else if (resultObj.age) {
     errors.push('Invalid age: must be number between 13 and 120');
   }
 
-  if (typeof result.isActive === 'boolean') {
+  if (typeof resultObj.isActive === 'boolean') {
     score += 4;
-  } else if (result.isActive !== undefined) {
+  } else if (resultObj.isActive !== undefined) {
     errors.push('Invalid isActive: must be boolean');
   }
 
-  if (result.roles && Array.isArray(result.roles) && result.roles.length >= 1) {
+  if (
+    resultObj.roles &&
+    Array.isArray(resultObj.roles) &&
+    resultObj.roles.length >= 1
+  ) {
     score += 4;
-  } else if (result.roles) {
+  } else if (resultObj.roles) {
     errors.push('Invalid roles: must be non-empty array');
   }
 
   // Validate nested profile object
-  if (result.profile && typeof result.profile === 'object') {
+  if (resultObj.profile && typeof resultObj.profile === 'object') {
     const profileFields = ['firstName', 'lastName', 'bio', 'website'];
     let validProfileFields = 0;
+    const profile = resultObj.profile as Record<string, unknown>;
 
     for (const field of profileFields) {
-      if (result.profile[field] && typeof result.profile[field] === 'string') {
+      if (profile[field] && typeof profile[field] === 'string') {
         validProfileFields++;
       } else {
         errors.push(`Invalid profile.${field}: must be string`);
@@ -121,26 +130,25 @@ function validateUserProfile(result: any): ValidationResult {
   }
 
   // Validate preferences object
-  if (result.preferences && typeof result.preferences === 'object') {
+  if (resultObj.preferences && typeof resultObj.preferences === 'object') {
+    const preferences = resultObj.preferences as Record<string, unknown>;
+
     if (
-      result.preferences.theme &&
-      ['light', 'dark', 'auto'].includes(result.preferences.theme)
+      preferences.theme &&
+      ['light', 'dark', 'auto'].includes(preferences.theme as string)
     ) {
       score += 4;
     } else {
       errors.push('Invalid preferences.theme: must be light, dark, or auto');
     }
 
-    if (
-      result.preferences.language &&
-      typeof result.preferences.language === 'string'
-    ) {
+    if (preferences.language && typeof preferences.language === 'string') {
       score += 2;
     } else {
       errors.push('Invalid preferences.language: must be string');
     }
 
-    if (typeof result.preferences.notifications === 'boolean') {
+    if (typeof preferences.notifications === 'boolean') {
       score += 2;
     } else {
       errors.push('Invalid preferences.notifications: must be boolean');
@@ -149,22 +157,22 @@ function validateUserProfile(result: any): ValidationResult {
 
   // Validate date fields
   if (
-    result.createdAt &&
-    typeof result.createdAt === 'string' &&
-    result.createdAt.includes('-')
+    resultObj.createdAt &&
+    typeof resultObj.createdAt === 'string' &&
+    resultObj.createdAt.includes('-')
   ) {
     score += 2;
-  } else if (result.createdAt) {
+  } else if (resultObj.createdAt) {
     errors.push('Invalid createdAt: must be date string');
   }
 
   if (
-    result.lastLogin &&
-    typeof result.lastLogin === 'string' &&
-    result.lastLogin.includes('-')
+    resultObj.lastLogin &&
+    typeof resultObj.lastLogin === 'string' &&
+    resultObj.lastLogin.includes('-')
   ) {
     score += 2;
-  } else if (result.lastLogin) {
+  } else if (resultObj.lastLogin) {
     errors.push('Invalid lastLogin: must be date string');
   }
 
@@ -197,7 +205,7 @@ class ValidationHintsRunner extends BaseBenchmarkRunner {
       );
 
       // Enhanced results display for validation hints
-      console.log('\n' + '='.repeat(80));
+      console.log(`\n${'='.repeat(80)}`);
       console.log('VALIDATION HINTS BENCHMARK RESULTS');
       console.log('='.repeat(80));
 
@@ -256,7 +264,7 @@ class ValidationHintsRunner extends BaseBenchmarkRunner {
         `  Performance Difference: ${results.performanceDifference > 0 ? '+' : ''}${results.performanceDifference}ms`
       );
 
-      console.log('\n' + '='.repeat(80));
+      console.log(`\n${'='.repeat(80)}`);
       console.log('💡 Key Insights:');
       console.log(
         `  • StructLM with validation hints saves ${results.tokenSavings.percentageSaved}% tokens vs JSON Schema`
@@ -284,41 +292,33 @@ class ValidationHintsRunner extends BaseBenchmarkRunner {
 }
 
 async function createRunner(model: string): Promise<ValidationHintsRunner> {
-  switch (model.toLowerCase()) {
-    case 'sonnet': {
-      const apiKey = process.env[sonnetConfig.apiKeyEnvVar];
-      if (!apiKey) {
-        throw new Error(
-          `${sonnetConfig.apiKeyEnvVar} environment variable is required`
-        );
-      }
-      const client = new SonnetClient(apiKey);
-      return new ValidationHintsRunner(client, sonnetConfig.modelName);
-    }
-    case 'llama33': {
-      const client = new Llama33Client(
-        llama33Config.baseUrl,
-        llama33Config.model
-      );
-      return new ValidationHintsRunner(client, llama33Config.modelName);
-    }
-    case 'phi4': {
-      const client = new Phi4Client(phi4Config.baseUrl, phi4Config.model);
-      return new ValidationHintsRunner(client, phi4Config.modelName);
-    }
-    default:
-      throw new Error(
-        `Unsupported model: ${model}. Supported: sonnet, llama33, phi4`
-      );
+  const modelConfig = openRouterModels[model.toLowerCase()];
+
+  if (!modelConfig) {
+    const supportedModels = Object.keys(openRouterModels).join(', ');
+    throw new Error(
+      `Unsupported model: ${model}. Supported: ${supportedModels}`
+    );
   }
+
+  const apiKey = process.env[modelConfig.apiKeyEnvVar];
+  if (!apiKey) {
+    throw new Error(
+      `${modelConfig.apiKeyEnvVar} environment variable is required`
+    );
+  }
+
+  const client = new OpenRouterClient(apiKey, modelConfig.modelId);
+  return new ValidationHintsRunner(client, modelConfig.modelName);
 }
 
 async function main() {
   const model = process.argv[2];
   if (!model) {
+    const supportedModels = Object.keys(openRouterModels).join(', ');
     console.error('Usage: npm run benchmark:validation <model>');
-    console.error('Example: npm run benchmark:validation sonnet');
-    console.error('Supported models: sonnet, llama33, phi4');
+    console.error('Example: npm run benchmark:validation claude-sonnet');
+    console.error(`Supported models: ${supportedModels}`);
     process.exit(1);
   }
 
