@@ -1,8 +1,8 @@
 # StructLM
 
-**Structured output generation and data parsing tool geared towards LLMs.**
+**Token-efficient schema definition for LLMs.**
 
-StructLM is a TypeScript library that helps you define JSON schemas with a clean, functional API and generate structured output descriptions for Large Language Models (LLMs). It provides a custom object notation format that is more readable and requires less input tokens.
+StructLM is a zod-like TypeScript library that helps you define JSON schemas with a clean, functional API and generate structured output descriptions for Large Language Models (LLMs). It provides a custom object notation format that is more readable and requires less input tokens.
 
 ## Why StructLM?
 
@@ -11,6 +11,10 @@ StructLM is a TypeScript library that helps you define JSON schemas with a clean
 - **More expressive validation**: StructLM uses serializable validation functions to validate data. These functions are then used to generate "hints" for LLMs, and to validate the output returned by LLMs.
 
 - **No accuracy loss**: Despite being more compact, StructLM does not lose any accuracy when generating structured output, when compared to JSON schemas. See [BENCHMARKS.md](BENCHMARKS.md) for more details on our benchmarks.
+
+- **Lightweight**: Zero dependencies, focused solely on schema definition and output generation.
+
+- **Type-safety**: StructLM provides full zod-like TypeScript type inference at compile time, and assertions at run time.
 
 # Benchmarks
 
@@ -308,12 +312,61 @@ const registrationSchema = s.object({
 });
 ```
 
-## Why StructLM?
+## StructLM vs JSON Schema
 
-- **LLM-Optimized**: The proprietary object notation is specifically designed to be clear and unambiguous for AI models
-- **Lightweight**: Zero dependencies, focused solely on schema definition and output generation
-- **Developer-Friendly**: Clean API, full TypeScript support, and comprehensive validation
-- **Flexible**: Works with any LLM or AI service. (Reliability may vary)
+StructLM provides a more compact alternative to JSON Schema for LLM applications. Here's how they compare:
+
+### **Schema Definition**
+
+**StructLM:**
+```typescript
+const userSchema = s.object({
+  name: s.string().validate(name => name.length >= 2),
+  email: s.string().validate(email => email.includes('@')),
+  age: s.number().validate(age => age >= 18 && age <= 120),
+  roles: s.array(s.string()).validate(arr => arr.length >= 1)
+});
+```
+
+**JSON Schema:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 2
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "age": {
+      "type": "number",
+      "minimum": 18,
+      "maximum": 120
+    },
+    "roles": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  },
+  "required": ["name", "email", "age", "roles"]
+}
+```
+
+### **LLM Prompt Output**
+
+**StructLM Output:**
+```text
+{ 
+  name: string /* name=>name.length>=2 */, 
+  email: string /* email=>email.includes("@") */, 
+  age: number /* age=>age>=18&&age<=120 */, 
+  roles: [string] /* arr=>arr.length>=1 */ 
+}
+```
 
 ## Contributing
 
