@@ -177,7 +177,7 @@ Text: "John Doe is 25 years old, email john@example.com, knows JavaScript and Py
 `;
 ```
 
-### Anthropic Claude Structured Output
+### OpenRouter API Integration
 
 ```typescript
 import { s } from 'structlm';

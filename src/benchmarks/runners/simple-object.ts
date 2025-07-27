@@ -8,15 +8,15 @@ import { bookSampleInputs } from '../data/sample-inputs';
 import type { BenchmarkConfig, ValidationResult } from '../shared/types';
 
 // Model imports
-import { SonnetClient } from '../models/sonnet/client';
-import { sonnetConfig } from '../models/sonnet/config';
+import { HaikuClient } from '../models/haiku/client';
+import { haikuConfig } from '../models/haiku/config';
 import { Llama33Client } from '../models/llama33/client';
 import { llama33Config } from '../models/llama33/config';
 import { Phi4Client } from '../models/phi4/client';
 import { phi4Config } from '../models/phi4/config';
 
 // Load environment variables
-config({ path: resolve(import.meta.dirname, '../models/sonnet/.env') });
+config({ path: resolve(import.meta.dirname, '../../../.env') });
 
 function validateBookCatalog(result: any): ValidationResult {
   const errors: string[] = [];
@@ -124,15 +124,19 @@ class SimpleObjectRunner extends BaseBenchmarkRunner {
 
 async function createRunner(model: string): Promise<SimpleObjectRunner> {
   switch (model.toLowerCase()) {
-    case 'sonnet': {
-      const apiKey = process.env[sonnetConfig.apiKeyEnvVar];
+    case 'haiku': {
+      const apiKey = process.env[haikuConfig.apiKeyEnvVar];
       if (!apiKey) {
         throw new Error(
-          `${sonnetConfig.apiKeyEnvVar} environment variable is required`
+          `${haikuConfig.apiKeyEnvVar} environment variable is required`
         );
       }
-      const client = new SonnetClient(apiKey);
-      return new SimpleObjectRunner(client, sonnetConfig.modelName);
+      const client = new HaikuClient(
+        apiKey,
+        haikuConfig.baseUrl,
+        haikuConfig.model
+      );
+      return new SimpleObjectRunner(client, haikuConfig.modelName);
     }
     case 'llama33': {
       const client = new Llama33Client(
@@ -147,7 +151,7 @@ async function createRunner(model: string): Promise<SimpleObjectRunner> {
     }
     default:
       throw new Error(
-        `Unsupported model: ${model}. Supported: sonnet, llama33, phi4`
+        `Unsupported model: ${model}. Supported: haiku, llama33, phi4`
       );
   }
 }
@@ -156,8 +160,8 @@ async function main() {
   const model = process.argv[2];
   if (!model) {
     console.error('Usage: npm run benchmark:simple <model>');
-    console.error('Example: npm run benchmark:simple sonnet');
-    console.error('Supported models: sonnet, llama33, phi4');
+    console.error('Example: npm run benchmark:simple haiku');
+    console.error('Supported models: haiku, llama33, phi4');
     process.exit(1);
   }
 

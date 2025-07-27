@@ -46,7 +46,7 @@
     "validation",
     "structured-output",
     "openai",
-    "anthropic",
+    "openrouter",
     "claude",
     "gpt"
   ],
@@ -54,7 +54,7 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
-    "@types/node": "^24.0.13",
+    "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9.32.0",
@@ -71,7 +71,6 @@
     ]
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.56.0",
     "dotenv": "^17.2.0"
   }
 }

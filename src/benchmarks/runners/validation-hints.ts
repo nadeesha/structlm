@@ -7,9 +7,13 @@ import { saveResults } from '../shared/utils';
 import { userProfileSampleInputs } from '../data/sample-inputs';
 import type { BenchmarkConfig, ValidationResult } from '../shared/types';
 
-// OpenRouter model imports
-import { OpenRouterClient } from '../models/openrouter/client';
-import { openRouterModels } from '../models/openrouter/config';
+// Model imports
+import { HaikuClient } from '../models/haiku/client';
+import { haikuConfig } from '../models/haiku/config';
+import { Llama33Client } from '../models/llama33/client';
+import { llama33Config } from '../models/llama33/config';
+import { Phi4Client } from '../models/phi4/client';
+import { phi4Config } from '../models/phi4/config';
 
 // Load environment variables
 config({ path: resolve(process.cwd(), '.env') });
@@ -292,33 +296,45 @@ class ValidationHintsRunner extends BaseBenchmarkRunner {
 }
 
 async function createRunner(model: string): Promise<ValidationHintsRunner> {
-  const modelConfig = openRouterModels[model.toLowerCase()];
-
-  if (!modelConfig) {
-    const supportedModels = Object.keys(openRouterModels).join(', ');
-    throw new Error(
-      `Unsupported model: ${model}. Supported: ${supportedModels}`
-    );
+  switch (model.toLowerCase()) {
+    case 'haiku': {
+      const apiKey = process.env[haikuConfig.apiKeyEnvVar];
+      if (!apiKey) {
+        throw new Error(
+          `${haikuConfig.apiKeyEnvVar} environment variable is required`
+        );
+      }
+      const client = new HaikuClient(
+        apiKey,
+        haikuConfig.baseUrl,
+        haikuConfig.model
+      );
+      return new ValidationHintsRunner(client, haikuConfig.modelName);
+    }
+    case 'llama33': {
+      const client = new Llama33Client(
+        llama33Config.baseUrl,
+        llama33Config.model
+      );
+      return new ValidationHintsRunner(client, llama33Config.modelName);
+    }
+    case 'phi4': {
+      const client = new Phi4Client(phi4Config.baseUrl, phi4Config.model);
+      return new ValidationHintsRunner(client, phi4Config.modelName);
+    }
+    default:
+      throw new Error(
+        `Unsupported model: ${model}. Supported: haiku, llama33, phi4`
+      );
   }
-
-  const apiKey = process.env[modelConfig.apiKeyEnvVar];
-  if (!apiKey) {
-    throw new Error(
-      `${modelConfig.apiKeyEnvVar} environment variable is required`
-    );
-  }
-
-  const client = new OpenRouterClient(apiKey, modelConfig.modelId);
-  return new ValidationHintsRunner(client, modelConfig.modelName);
 }
 
 async function main() {
   const model = process.argv[2];
   if (!model) {
-    const supportedModels = Object.keys(openRouterModels).join(', ');
     console.error('Usage: npm run benchmark:validation <model>');
-    console.error('Example: npm run benchmark:validation claude-sonnet');
-    console.error(`Supported models: ${supportedModels}`);
+    console.error('Example: npm run benchmark:validation haiku');
+    console.error('Supported models: haiku, llama33, phi4');
     process.exit(1);
   }
 
