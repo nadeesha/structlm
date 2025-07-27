@@ -313,13 +313,18 @@ async function createRunner(model: string): Promise<ValidationHintsRunner> {
     }
     case 'llama33': {
       const client = new Llama33Client(
+        llama33Config.apiKey,
         llama33Config.baseUrl,
         llama33Config.model
       );
       return new ValidationHintsRunner(client, llama33Config.modelName);
     }
     case 'phi4': {
-      const client = new Phi4Client(phi4Config.baseUrl, phi4Config.model);
+      const client = new Phi4Client(
+        phi4Config.apiKey,
+        phi4Config.baseUrl,
+        phi4Config.model
+      );
       return new ValidationHintsRunner(client, phi4Config.modelName);
     }
     default:

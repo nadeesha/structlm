@@ -1,10 +1,16 @@
 import type { ModelClient } from '../../shared/types';
 
 export class Phi4Client implements ModelClient {
+  private apiKey: string;
   private baseUrl: string;
   private model: string;
 
-  constructor(baseUrl = 'http://localhost:11434', model = 'phi4') {
+  constructor(
+    apiKey: string,
+    baseUrl = 'https://openrouter.ai/api/v1',
+    model = 'microsoft/phi-4'
+  ) {
+    this.apiKey = apiKey;
     this.baseUrl = baseUrl;
     this.model = model;
   }
@@ -17,37 +23,48 @@ export class Phi4Client implements ModelClient {
     inputTokens: number;
     outputTokens: number;
   }> {
-    const response = await fetch(`${this.baseUrl}/api/generate`, {
+    const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://github.com/nadeesha/structlm',
+        'X-Title': 'StructLM Benchmarks',
       },
       body: JSON.stringify({
         model: this.model,
-        prompt,
-        stream: false,
-        options: {
-          num_predict: maxTokens,
-        },
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: maxTokens,
       }),
     });
 
     if (!response.ok) {
       throw new Error(
-        `Phi4 API error: ${response.status} ${response.statusText}`
+        `OpenRouter API error: ${response.status} ${response.statusText}`
       );
     }
 
-    const data = (await response.json()) as { response: string };
+    const data = (await response.json()) as {
+      choices: Array<{
+        message: {
+          content: string;
+        };
+      }>;
+      usage: {
+        prompt_tokens: number;
+        completion_tokens: number;
+      };
+    };
 
-    // Ollama doesn't provide token counts in the same way, so we estimate
-    const inputTokens = Math.ceil(prompt.length / 4); // Rough estimate: 4 chars per token
-    const outputTokens = Math.ceil(data.response.length / 4);
+    const content = data.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('Expected text response from Phi-4');
+    }
 
     return {
-      content: data.response,
-      inputTokens,
-      outputTokens,
+      content,
+      inputTokens: data.usage.prompt_tokens,
+      outputTokens: data.usage.completion_tokens,
     };
   }
 }
