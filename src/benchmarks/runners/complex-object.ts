@@ -2,7 +2,7 @@
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import { BaseBenchmarkRunner } from '../shared/base-runner';
-import { orderSchema, orderJsonSchema, OrderType } from '../shared/schemas';
+import { orderSchema, orderJsonSchema } from '../shared/schemas';
 import { printComparisonResults, saveResults } from '../shared/utils';
 import { orderSampleInputs } from '../data/sample-inputs';
 import type { BenchmarkConfig, ValidationResult } from '../shared/types';
