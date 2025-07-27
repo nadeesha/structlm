@@ -368,6 +368,129 @@ const userSchema = s.object({
 }
 ```
 
+## Frequently Asked Questions
+
+### **General Usage**
+
+#### **Q: How is StructLM different from Zod?**
+A: While StructLM is inspired by Zod's API, it's specifically designed for LLM integration. StructLM generates compact schema descriptions optimized for AI prompts (XX% fewer tokens), while Zod focuses on general TypeScript validation. StructLM's `.stringify()` method produces LLM-friendly output, whereas Zod employs `zod-to-json-schema` or equivalent tools.
+
+#### **Q: Can I use StructLM for regular data validation without LLMs?**
+A: Yes! StructLM mostly works for standard TypeScript data validation. Use `.parse()` for validation and type inference just like Zod. However, StructLM's main advantage is its token-efficient LLM integration capabilities. Therefore, some of the more advanced Typescript features like discriminated unions, recursive types, etc. may not work as expected right now.
+
+#### **Q: Which LLMs work with StructLM?**
+StructLM itself is model agnostic, and works as a schema definition and data validation library. Reliability may vary by model, but our benchmarks show consistent results across major providers.
+
+#### **Q: Does StructLM work in the browser?**
+A: Yes! StructLM is a lightweight TypeScript library with zero dependencies that works in browsers, Node.js, Deno, and Bun.
+
+### **Schema Definition**
+
+#### **Q: How do I make a field optional?**
+A: Currently, all fields in StructLM objects are required. Optional fields support is planned for future releases. For now, you can use validation to allow empty/null values:
+```typescript
+const schema = s.object({
+  requiredField: s.string(),
+  optionalField: s.string().validate(val => val === "" || val.length > 0)
+});
+```
+
+#### **Q: Can I use unions/discriminated unions like in Zod?**
+A: Union types are not currently supported but are on the roadmap. For now, use string validation with enums:
+```typescript
+const statusSchema = s.string().validate(status => 
+  ['pending', 'approved', 'rejected'].includes(status)
+);
+```
+
+#### **Q: How do I validate nested arrays?**
+A: Use nested `s.array()` calls:
+```typescript
+const matrixSchema = s.array(s.array(s.number()));
+// Outputs: [[number]]
+
+const complexSchema = s.array(
+  s.object({
+    items: s.array(s.string()).validate(arr => arr.length > 0)
+  })
+);
+```
+
+#### **Q: Can validation functions access other fields in the object?**
+A: No, validation functions only receive the current field's value. Cross-field validation isn't currently supported.
+
+### **LLM Integration**
+
+#### **Q: Do LLMs really understand StructLM's compact format better?**
+A: Our benchmarks show equal or better accuracy compared to JSON Schema. The compact format is:
+- Less verbose and confusing
+- More similar to natural TypeScript syntax
+- Includes validation hints inline
+- Reduces prompt complexity
+
+#### **Q: Can I combine multiple schemas in one prompt?**
+A: Yes! Use `.stringify()` on multiple schemas:
+```typescript
+const userSchema = s.object({...});
+const orderSchema = s.object({...});
+
+const prompt = `
+Process this data and return:
+- User: ${userSchema.stringify()}
+- Order: ${orderSchema.stringify()}
+`;
+```
+
+#### **Q: How do I handle LLM responses that don't match the schema?**
+A: StructLM's `.parse()` method throws descriptive errors for invalid data:
+```typescript
+try {
+  const result = schema.parse(llmResponse);
+} catch (error) {
+  console.log('LLM returned invalid data:', error.message);
+  // Handle error: retry, use fallback, etc.
+}
+```
+
+### **Performance**
+
+#### **Q: What's the performance overhead?**
+A: StructLM is lightweight:
+- Schema creation: Minimal overhead
+- `.stringify()`: Fast string concatenation
+- `.parse()`: JSON.parse + validation functions
+- No runtime dependencies
+
+#### **Q: Can I pre-compile schemas for better performance?**
+A: Schema stringification is already very fast, but you can cache results:
+```typescript
+const userSchemaString = userSchema.stringify();
+// Reuse userSchemaString in multiple prompts
+```
+
+### **Troubleshooting**
+
+#### **Q: Why is my validation function not working in LLM prompts?**
+A: Validation functions are serialized as text hints for LLMs but only enforced during `.parse()`. Make sure your function:
+- Uses simple, clear logic
+- Doesn't reference external variables
+- Is readable when converted to string
+
+#### **Q: My LLM keeps returning invalid JSON. What should I do?**
+A: Try these approaches:
+1. Simplify your schema
+2. Add explicit instructions: "Return valid JSON only"
+3. Use a more capable model
+4. Add example valid responses to your prompt
+5. Implement retry logic with error feedback
+
+#### **Q: Can I see what the validation hints look like?**
+A: Yes! Use `.stringify()` to see exactly what gets sent to the LLM:
+```typescript
+console.log(schema.stringify());
+// Shows the compact format with validation hints
+```
+
 ## Contributing
 
 We welcome contributions! Please open an issue or submit a pull request on GitHub.
