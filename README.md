@@ -113,6 +113,8 @@ const contact = contactSchema.parse(llmResponse);
 
 ## API Reference
 
+For the specification of the custom object notation, see [SPECIFICATION.md](SPECIFICATION.md).
+
 ### Basic Types
 
 #### `s.string()`
