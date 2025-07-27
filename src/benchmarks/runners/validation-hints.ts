@@ -16,7 +16,7 @@ import { Phi4Client } from '../models/phi4/client';
 import { phi4Config } from '../models/phi4/config';
 
 // Load environment variables
-config({ path: resolve(process.cwd(), '.env') });
+config({ path: resolve(import.meta.dirname, '../../../.env') });
 
 function validateUserProfile(result: unknown): ValidationResult {
   const errors: string[] = [];
@@ -312,16 +312,28 @@ async function createRunner(model: string): Promise<ValidationHintsRunner> {
       return new ValidationHintsRunner(client, haikuConfig.modelName);
     }
     case 'llama33': {
+      const apiKey = process.env[llama33Config.apiKeyEnvVar];
+      if (!apiKey) {
+        throw new Error(
+          `${llama33Config.apiKeyEnvVar} environment variable is required`
+        );
+      }
       const client = new Llama33Client(
-        llama33Config.apiKey,
+        apiKey,
         llama33Config.baseUrl,
         llama33Config.model
       );
       return new ValidationHintsRunner(client, llama33Config.modelName);
     }
     case 'phi4': {
+      const apiKey = process.env[phi4Config.apiKeyEnvVar];
+      if (!apiKey) {
+        throw new Error(
+          `${phi4Config.apiKeyEnvVar} environment variable is required`
+        );
+      }
       const client = new Phi4Client(
-        phi4Config.apiKey,
+        apiKey,
         phi4Config.baseUrl,
         phi4Config.model
       );

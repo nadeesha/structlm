@@ -139,16 +139,28 @@ async function createRunner(model: string): Promise<SimpleObjectRunner> {
       return new SimpleObjectRunner(client, haikuConfig.modelName);
     }
     case 'llama33': {
+      const apiKey = process.env[llama33Config.apiKeyEnvVar];
+      if (!apiKey) {
+        throw new Error(
+          `${llama33Config.apiKeyEnvVar} environment variable is required`
+        );
+      }
       const client = new Llama33Client(
-        llama33Config.apiKey,
+        apiKey,
         llama33Config.baseUrl,
         llama33Config.model
       );
       return new SimpleObjectRunner(client, llama33Config.modelName);
     }
     case 'phi4': {
+      const apiKey = process.env[phi4Config.apiKeyEnvVar];
+      if (!apiKey) {
+        throw new Error(
+          `${phi4Config.apiKeyEnvVar} environment variable is required`
+        );
+      }
       const client = new Phi4Client(
-        phi4Config.apiKey,
+        apiKey,
         phi4Config.baseUrl,
         phi4Config.model
       );
