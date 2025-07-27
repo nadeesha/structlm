@@ -2,16 +2,39 @@
 
 **Structured output generation and data parsing tool geared towards LLMs.**
 
-StructLM is a TypeScript library that helps you define JSON schemas with a clean, functional API and generate structured output descriptions for Large Language Models (LLMs). It provides a proprietary object notation format that's perfect for prompt engineering and data validation.
+StructLM is a TypeScript library that helps you define JSON schemas with a clean, functional API and generate structured output descriptions for Large Language Models (LLMs). It provides a custom object notation format that is more readable and requires less input tokens.
 
-## Features
+## Why StructLM?
 
-- 🎯 **LLM-focused**: Designed specifically for structured output generation with AI models
-- 🔧 **Simple API**: Clean, functional interface for defining schemas  
-- 📝 **Proprietary Notation**: Custom object notation format for clear AI communication
-- ✅ **Custom Validation**: JavaScript function-based validation system
-- 🚀 **TypeScript First**: Full type safety and inference
-- 📦 **Zero Dependencies**: Lightweight and focused
+- **Compact schema definition**: StructLM uses a proprietary object notation that is more compact and requires less input tokens than JSON schemas.
+
+- **More expressive validation**: StructLM uses serializable validation functions to validate data. These functions are then used to generate "hints" for LLMs, and to validate the output returned by LLMs.
+
+- **No accuracy loss**: Despite being more compact, StructLM does not lose any accuracy when generating structured output, when compared to JSON schemas. See [BENCHMARKS.md](BENCHMARKS.md) for more details on our benchmarks.
+
+# Benchmarks
+
+This is a benchmark of StructLM vs JSON Schema, using Claude 3.5 Haiku. For the full benchmark, see [BENCHMARKS.md](BENCHMARKS.md).
+
+![StructLM vs JSON Schema](./assets/haiku-bench.png)
+
+### Simple Object
+- JSON-Schema: 414 tokens (average)
+- StructLM: 222 tokens (average)
+- Reduction: 46.4% (average)
+- Accuracy: Equal
+
+### Complex Object
+- JSON-Schema: 1460 tokens (average)
+- StructLM: 610 tokens (average)
+- Reduction: 58.2% (average)
+- Accuracy: StructLM is slightly better (+0.4% on average)
+
+### Schema with custom validations
+- JSON-Schema: 852 tokens (average)
+- StructLM: 480 tokens (average)
+- Reduction: 43.7% (average)
+- Accuracy: Equal
 
 ## Installation
 
@@ -138,7 +161,7 @@ const person = personSchema.parse(`{
 ### Validation
 
 #### `.validate(fn)`
-Adds custom validation using a JavaScript function.
+Adds custom validation using a JavaScript function. 
 
 ```typescript
 const emailSchema = s.string().validate(email => email.includes('@'));
