@@ -67,6 +67,50 @@ const userData = userSchema.parse('{"name":{"first":"John","last":"Doe"},"age":3
 // Returns: { name: { first: "John", last: "Doe" }, age: 30, active: true, tags: ["developer", "typescript"] }
 ```
 
+## Simple LLM Integration
+
+Here's a complete example showing how to use StructLM with an LLM to extract structured data:
+
+```typescript
+import { s } from 'structlm';
+
+// 1. Define your schema
+const contactSchema = s.object({
+  name: s.string(),
+  email: s.string().validate(email => email.includes('@')),
+  phone: s.string(),
+  company: s.string()
+});
+
+// 2. Create your prompt with the schema
+const text = "Contact John Doe at john@example.com or call (555) 123-4567. He works at Tech Corp.";
+
+const prompt = `
+Extract contact information from the following text and return it as JSON matching this structure:
+${contactSchema.stringify()}
+
+Text: "${text}"
+
+Return only the JSON object, no additional text.`;
+
+// The schema.stringify() outputs: 
+// { name: string, email: string /* email=>email.includes('@') */, phone: string, company: string }
+
+// 3. Send prompt to LLM (the LLM returns this JSON string)
+const llmResponse = `{
+  "name": "John Doe",
+  "email": "john@example.com", 
+  "phone": "(555) 123-4567",
+  "company": "Tech Corp"
+}`;
+
+// 4. Parse and validate the LLM response
+const contact = contactSchema.parse(llmResponse);
+// Returns: { name: "John Doe", email: "john@example.com", phone: "(555) 123-4567", company: "Tech Corp" }
+
+// The parse() method validates the email format and ensures all required fields are present
+```
+
 ## API Reference
 
 ### Basic Types
@@ -176,88 +220,6 @@ const userSchema = s.object({
 });
 ```
 
-## LLM Integration Examples
-
-### OpenAI Function Calling
-
-```typescript
-import { s } from 'structlm';
-
-const extractUserInfoSchema = s.object({
-  users: s.array(s.object({
-    name: s.string(),
-    age: s.number(),
-    email: s.string().validate(email => email.includes('@')),
-    skills: s.array(s.string())
-  }))
-});
-
-const prompt = `
-Extract user information from the following text and return it in this format:
-${extractUserInfoSchema.stringify()}
-
-Text: "John Doe is 25 years old, email john@example.com, knows JavaScript and Python. Jane Smith, age 30, jane@test.com, skilled in React and Node.js."
-`;
-```
-
-### OpenRouter API Integration
-
-```typescript
-import { s } from 'structlm';
-
-const analysisSchema = s.object({
-  sentiment: s.string().validate(s => ['positive', 'negative', 'neutral'].includes(s)),
-  confidence: s.number().validate(n => n >= 0 && n <= 1),
-  topics: s.array(s.string()),
-  summary: s.string(),
-  actionItems: s.array(s.object({
-    task: s.string(),
-    priority: s.string().validate(p => ['high', 'medium', 'low'].includes(p)),
-    assignee: s.string()
-  }))
-});
-
-const prompt = `
-Analyze this meeting transcript and return structured data in this format:
-${analysisSchema.stringify()}
-
-Transcript: "..."
-`;
-```
-
-### Custom AI Model Integration
-
-```typescript
-import { s } from 'structlm';
-
-const productSchema = s.object({
-  name: s.string(),
-  price: s.number().validate(p => p > 0),
-  category: s.string(),
-  inStock: s.boolean(),
-  tags: s.array(s.string()),
-  specifications: s.object({
-    weight: s.number(),
-    dimensions: s.object({
-      width: s.number(),
-      height: s.number(),
-      depth: s.number()
-    })
-  })
-});
-
-// Use in your AI prompt
-const systemPrompt = `
-You are a product information extractor. Always return data in this exact format:
-${productSchema.stringify()}
-
-Ensure all validations are met:
-- Price must be positive
-- Include all required fields
-- Use proper data types
-`;
-```
-
 ## Type Inference
 
 StructLM provides full TypeScript type inference:
@@ -357,7 +319,7 @@ We welcome contributions! Please open an issue or submit a pull request on GitHu
 
 ## License
 
-MIT License
+Apache 2.0 License
 
 ## Support
 
