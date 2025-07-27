@@ -2,6 +2,9 @@
 
 This document describes the benchmarking methodology and results for comparing JSON Schema and StructLM approaches for structured output generation with Large Language Models.
 
+- Source code: [./src/benchmarks](./src/benchmarks)
+- Latest results: [./benchmark-results](./benchmark-results)
+
 ## Overview
 
 StructLM is a library for structured output generation and data parsing, designed specifically for LLMs. These benchmarks compare two approaches:
@@ -11,8 +14,9 @@ StructLM is a library for structured output generation and data parsing, designe
 
 ## Benchmark Types
 
-### 1. Simple Object (`simple-object`)
-Tests basic object extraction with simple data types.
+### 1. Simple Object (`simple-object`) 
+
+Tests basic object extraction with [simple data types](./src/benchmarks/runners/simple-object.ts).
 
 **Test Schema**: Book catalog extraction
 - Fields: title, author, publication_year, genre, price, in_stock
@@ -20,7 +24,8 @@ Tests basic object extraction with simple data types.
 - Iterations: 500 per method
 
 ### 2. Complex Object (`complex-object`) 
-Tests complex nested object extraction with multiple levels of nesting.
+
+Tests complex nested object extraction with [multiple levels of nesting](./src/benchmarks/runners/complex-object.ts).
 
 **Test Schema**: E-commerce order processing
 - Fields: Nested customer, payment, shipping, and item details
@@ -28,7 +33,8 @@ Tests complex nested object extraction with multiple levels of nesting.
 - Iterations: 500 per method
 
 ### 3. Validation Hints (`validation-hints`)
-Tests validation-enhanced schemas with type constraints.
+
+Tests validation-enhanced schemas with [type constraints](./src/benchmarks/runners/validation-hints.ts).
 
 **Test Schema**: User profile with validation rules
 - Fields: User data with embedded validation constraints
@@ -148,8 +154,6 @@ Return only the JSON object, no additional text.
 
 Based on comprehensive benchmarking across three models and three complexity levels, **StructLM demonstrates clear advantages as a viable alternative to JSON Schema** for LLM-based structured output generation.
 
-### ✅ **StructLM Advantages Proven**
-
 1. **Significant Cost Reduction**: StructLM consistently achieves **27-42% token savings** across all models and task complexities, directly translating to reduced API costs.
 
 2. **Maintained or Improved Accuracy**: StructLM matches or exceeds JSON Schema accuracy in most scenarios:
@@ -159,7 +163,7 @@ Based on comprehensive benchmarking across three models and three complexity lev
 
 3. **Better Success Rates**: StructLM shows marginally higher success rates, particularly on complex objects (+0.6%).
 
-4. **Improved Performance on Complex Tasks**: StructLM actually performs faster on complex object extraction (+1.1s improvement), suggesting better model comprehension of the compact syntax.
+4. **Improved Performance on Complex Tasks**: StructLM actually performs faster on complex object extraction (+1.1s improvement).
 
 ## Running Benchmarks
 
