@@ -1,0 +1,51 @@
+{
+  "model": "haiku",
+  "jsonSchema": {
+    "model": "haiku",
+    "method": "json-schema",
+    "totalIterations": 500,
+    "successfulIterations": 499,
+    "failedIterations": 1,
+    "averageInputTokens": 414,
+    "averageOutputTokens": 248,
+    "totalInputTokens": 206713,
+    "totalOutputTokens": 123806,
+    "accuracyScore": 100,
+    "averageResponseTime": 5164,
+    "errors": [
+      "Iteration 234: Cannot read properties of undefined (reading 'prompt_tokens')"
+    ],
+    "sampleInputs": [
+      "Extract information from the following text and format it according to the JSON schema.\n\nInput text: Here are some books from our catalog:\n  \"The Great Gatsby\" by F. Scott Fitzgerald was published in 1925. It's a classic American novel priced at $12.99 and currently in stock.\n  \"To Kill a Mockingbird\" by Harper Lee, published in 1960, is a powerful drama available for $14.50 and is in stock.\n  \"1984\" by George Orwell from 1949 is a dystopian fiction book priced at $13.25 but currently out of stock.\n\nPlease respond with a JSON object that matches this schema:\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"books\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\"\n          },\n          \"author\": {\n            \"type\": \"string\"\n          },\n          \"publication_year\": {\n            \"type\": \"integer\"\n          },\n          \"genre\": {\n            \"type\": \"string\"\n          },\n          \"price\": {\n            \"type\": \"number\"\n          },\n          \"in_stock\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"title\",\n          \"author\",\n          \"publication_year\",\n          \"genre\",\n          \"price\",\n          \"in_stock\"\n        ]\n      }\n    }\n  },\n  \"required\": [\n    \"books\"\n  ]\n}\n\nReturn only the JSON object, no additional text.\n\n[Request ID: 70sukmnj6wy]",
+      "Extract information from the following text and format it according to the JSON schema.\n\nInput text: Book inventory update:\n  \"Pride and Prejudice\" by Jane Austen (1813) - Romance - $11.99 - Available\n  \"The Catcher in the Rye\" by J.D. Salinger (1951) - Coming-of-age fiction - $13.75 - In stock\n  \"Lord of the Flies\" by William Golding (1954) - Adventure fiction - $12.50 - Out of stock\n  \"The Chronicles of Narnia\" by C.S. Lewis (1950) - Fantasy - $19.99 - Available\n\nPlease respond with a JSON object that matches this schema:\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"books\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\"\n          },\n          \"author\": {\n            \"type\": \"string\"\n          },\n          \"publication_year\": {\n            \"type\": \"integer\"\n          },\n          \"genre\": {\n            \"type\": \"string\"\n          },\n          \"price\": {\n            \"type\": \"number\"\n          },\n          \"in_stock\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"title\",\n          \"author\",\n          \"publication_year\",\n          \"genre\",\n          \"price\",\n          \"in_stock\"\n        ]\n      }\n    }\n  },\n  \"required\": [\n    \"books\"\n  ]\n}\n\nReturn only the JSON object, no additional text.\n\n[Request ID: uktnd8lflfq]",
+      "Extract information from the following text and format it according to the JSON schema.\n\nInput text: Our bookstore has these titles:\n  Title: \"Dune\", Author: Frank Herbert, Year: 1965, Genre: Science Fiction, Price: $16.99, Stock: Yes\n  Title: \"The Hobbit\", Author: J.R.R. Tolkien, Year: 1937, Genre: Fantasy, Price: $14.99, Stock: Yes\n  Title: \"Brave New World\", Author: Aldous Huxley, Year: 1932, Genre: Dystopian, Price: $13.99, Stock: No\n\nPlease respond with a JSON object that matches this schema:\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"books\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\"\n          },\n          \"author\": {\n            \"type\": \"string\"\n          },\n          \"publication_year\": {\n            \"type\": \"integer\"\n          },\n          \"genre\": {\n            \"type\": \"string\"\n          },\n          \"price\": {\n            \"type\": \"number\"\n          },\n          \"in_stock\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"title\",\n          \"author\",\n          \"publication_year\",\n          \"genre\",\n          \"price\",\n          \"in_stock\"\n        ]\n      }\n    }\n  },\n  \"required\": [\n    \"books\"\n  ]\n}\n\nReturn only the JSON object, no additional text.\n\n[Request ID: s08dll5v8b]"
+    ]
+  },
+  "structlm": {
+    "model": "haiku",
+    "method": "structlm",
+    "totalIterations": 500,
+    "successfulIterations": 500,
+    "failedIterations": 0,
+    "averageInputTokens": 222,
+    "averageOutputTokens": 248,
+    "totalInputTokens": 111104,
+    "totalOutputTokens": 124023,
+    "accuracyScore": 100,
+    "averageResponseTime": 6636,
+    "errors": [],
+    "sampleInputs": [
+      "Extract information from the following text and format it according to the schema.\n\nInput text: Here are some books from our catalog:\n  \"The Great Gatsby\" by F. Scott Fitzgerald was published in 1925. It's a classic American novel priced at $12.99 and currently in stock.\n  \"To Kill a Mockingbird\" by Harper Lee, published in 1960, is a powerful drama available for $14.50 and is in stock.\n  \"1984\" by George Orwell from 1949 is a dystopian fiction book priced at $13.25 but currently out of stock.\n\nPlease respond with a JSON object that matches this structure:\n{ books: [{ title: string, author: string, publication_year: number, genre: string, price: number, in_stock: boolean }] }\n\nReturn only the JSON object, no additional text.\n\n[Request ID: sg665ox5o1q]",
+      "Extract information from the following text and format it according to the schema.\n\nInput text: Book inventory update:\n  \"Pride and Prejudice\" by Jane Austen (1813) - Romance - $11.99 - Available\n  \"The Catcher in the Rye\" by J.D. Salinger (1951) - Coming-of-age fiction - $13.75 - In stock\n  \"Lord of the Flies\" by William Golding (1954) - Adventure fiction - $12.50 - Out of stock\n  \"The Chronicles of Narnia\" by C.S. Lewis (1950) - Fantasy - $19.99 - Available\n\nPlease respond with a JSON object that matches this structure:\n{ books: [{ title: string, author: string, publication_year: number, genre: string, price: number, in_stock: boolean }] }\n\nReturn only the JSON object, no additional text.\n\n[Request ID: 6pdkownmsys]",
+      "Extract information from the following text and format it according to the schema.\n\nInput text: Our bookstore has these titles:\n  Title: \"Dune\", Author: Frank Herbert, Year: 1965, Genre: Science Fiction, Price: $16.99, Stock: Yes\n  Title: \"The Hobbit\", Author: J.R.R. Tolkien, Year: 1937, Genre: Fantasy, Price: $14.99, Stock: Yes\n  Title: \"Brave New World\", Author: Aldous Huxley, Year: 1932, Genre: Dystopian, Price: $13.99, Stock: No\n\nPlease respond with a JSON object that matches this structure:\n{ books: [{ title: string, author: string, publication_year: number, genre: string, price: number, in_stock: boolean }] }\n\nReturn only the JSON object, no additional text.\n\n[Request ID: dvndgglbh1u]"
+    ]
+  },
+  "tokenSavings": {
+    "inputTokens": 95609,
+    "outputTokens": -217,
+    "totalTokens": 95392,
+    "percentageSaved": 29
+  },
+  "accuracyDifference": 0,
+  "performanceDifference": -1472
+}
