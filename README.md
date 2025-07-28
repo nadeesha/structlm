@@ -12,13 +12,13 @@
 
 - **Compact schema definition**: StructLM uses a proprietary object notation that is more compact and is more token-efficient than JSON schemas.
 
-- **Clear and readable**: StructLM's schema definition is more readable by LLMs, and is more similar to natural TypeScript syntax.
+- **Clear and readable**: StructLM's schema definition is human-readable, and is more similar to natural TypeScript syntax.
 
-- **More expressive validation**: StructLM uses serializable validation functions to validate data. These functions are then used to generate "hints" for LLMs, and to validate the output returned by LLMs.
+- **More expressive validation**: Validations are defined as functions, and are serialized to be sent to LLMs.
 
 - **No accuracy loss**: Despite being more compact, StructLM does not lose any accuracy when generating structured output, when compared to JSON schemas. See [BENCHMARKS.md](BENCHMARKS.md) for more details on our benchmarks.
 
-- **Lightweight**: Zero dependencies, focused solely on schema definition and output generation.
+- **Lightweight**: Zero dependencies, focused solely on runtime schema definition, and output validation.
 
 - **Type-safety**: StructLM provides full zod-like TypeScript type inference at compile time, and assertions at run time.
 
