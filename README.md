@@ -1,12 +1,12 @@
 # StructLM
 
-**Token-efficient schema definition for LLMs.**
-
-StructLM is a zod-like TypeScript library that helps you define JSON schemas with a clean, functional API and generate structured output descriptions for Large Language Models (LLMs). It provides a custom object notation format that is more readable and requires less input tokens.
+**Token-efficient schema definition for getting structured output from LLMs.**
 
 ## Why StructLM?
 
-- **Compact schema definition**: StructLM uses a proprietary object notation that is more compact and requires less input tokens than JSON schemas.
+- **Compact schema definition**: StructLM uses a proprietary object notation that is more compact and is more token-efficient than JSON schemas.
+
+- **Clear and readable**: StructLM's schema definition is more readable by LLMs, and is more similar to natural TypeScript syntax.
 
 - **More expressive validation**: StructLM uses serializable validation functions to validate data. These functions are then used to generate "hints" for LLMs, and to validate the output returned by LLMs.
 
@@ -212,6 +212,8 @@ const person = personSchema.parse(`{
 
 #### `.validate(fn)`
 Adds custom validation using a JavaScript function. 
+
+** IMPORTANT **: Validation functions need to be pure functions, and not reference any external variables. 
 
 ```typescript
 const emailSchema = s.string().validate(email => email.includes('@'));
