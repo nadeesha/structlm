@@ -1,5 +1,11 @@
 # StructLM
 
+[![CI](https://img.shields.io/github/actions/workflow/status/nadeesha/structlm/ci.yml?branch=main&label=CI)](https://github.com/nadeesha/structlm/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/structlm)](https://www.npmjs.com/package/structlm)
+[![npm downloads](https://img.shields.io/npm/dm/structlm)](https://www.npmjs.com/package/structlm)
+[![License](https://img.shields.io/npm/l/structlm)](https://github.com/nadeesha/structlm/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 **Token-efficient schema definition for getting structured output from LLMs.**
 
 ## Why StructLM?
