@@ -344,18 +344,6 @@ const registrationSchema = s.object({
 
 StructLM provides a more compact alternative to JSON Schema for LLM applications. Here's how they compare:
 
-### **Schema Definition**
-
-**StructLM:**
-```typescript
-const userSchema = s.object({
-  name: s.string().validate(name => name.length >= 2),
-  email: s.string().validate(email => email.includes('@')),
-  age: s.number().validate(age => age >= 18 && age <= 120),
-  roles: s.array(s.string()).validate(arr => arr.length >= 1)
-});
-```
-
 **JSON Schema:**
 ```json
 {
@@ -384,9 +372,7 @@ const userSchema = s.object({
 }
 ```
 
-### **LLM Prompt Output**
-
-**StructLM Output:**
+**StructLM Schema:**
 ```text
 { 
   name: string /* name=>name.length>=2 */, 
@@ -394,6 +380,17 @@ const userSchema = s.object({
   age: number /* age=>age>=18&&age<=120 */, 
   roles: [string] /* arr=>arr.length>=1 */ 
 }
+```
+
+To get this schema, this is the expression you would use:
+
+```typescript
+const userSchema = s.object({
+  name: s.string().validate(name => name.length >= 2),
+  email: s.string().validate(email => email.includes('@')),
+  age: s.number().validate(age => age >= 18 && age <= 120),
+  roles: s.array(s.string()).validate(arr => arr.length >= 1)
+});
 ```
 
 ## Frequently Asked Questions
