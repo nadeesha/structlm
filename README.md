@@ -12,7 +12,7 @@
 
 - **Compact schema definition**: StructLM uses a proprietary object notation that is more compact and is more token-efficient than JSON schemas.
 
-- **Clear and readable**: StructLM's schema definition is human-readable, and is more similar to natural TypeScript syntax.
+- **Clear and readable**: StructLM's schema definition is human-readable, and is more similar to natural TypeScript syntax. See [SPECIFICATION.md](SPECIFICATION.md) for the full specification.
 
 - **More expressive validation**: Validations are defined as functions, and are serialized to be sent to LLMs.
 
