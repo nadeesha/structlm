@@ -20,23 +20,23 @@ describe('stringify() method', () => {
       assert.strictEqual(
         s
           .string()
-          .validate(s => s.length > 0)
+          .validate(str => str.length > 0)
           .stringify(),
-        'string /* s => s.length > 0 */'
+        'string /* str=>str.length>0 */'
       );
       assert.strictEqual(
         s
           .number()
           .validate(n => n > 0)
           .stringify(),
-        'number /* n => n > 0 */'
+        'number /* n=>n>0 */'
       );
       assert.strictEqual(
         s
           .boolean()
           .validate(b => b === true)
           .stringify(),
-        'boolean /* b => b === true */'
+        'boolean /* b=>b===true */'
       );
     });
   });

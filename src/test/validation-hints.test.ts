@@ -6,33 +6,27 @@ describe('Validation Hints in stringify()', () => {
   describe('Basic types with validation', () => {
     test('should include validation function for string schema', () => {
       const emailSchema = s.string().validate(value => value.includes('@'));
-      assert.strictEqual(
+      assert.equal(
         emailSchema.stringify(),
-        "string /* value => value.includes('@') */"
+        'string /* value=>value.includes("@") */'
       );
     });
 
     test('should include validation function for number schema', () => {
       const positiveSchema = s.number().validate(value => value > 0);
-      assert.strictEqual(
-        positiveSchema.stringify(),
-        'number /* value => value > 0 */'
-      );
+      assert.equal(positiveSchema.stringify(), 'number /* value=>value>0 */');
     });
 
     test('should include validation function for boolean schema', () => {
       const trueSchema = s.boolean().validate(value => value === true);
-      assert.strictEqual(
-        trueSchema.stringify(),
-        'boolean /* value => value === true */'
-      );
+      assert.equal(trueSchema.stringify(), 'boolean /* value=>value===true */');
     });
 
     test('should include validation function for array schema', () => {
       const nonEmptyArray = s.array(s.string()).validate(arr => arr.length > 0);
-      assert.strictEqual(
+      assert.equal(
         nonEmptyArray.stringify(),
-        '[string] /* arr => arr.length > 0 */'
+        '[string] /* arr=>arr.length>0 */'
       );
     });
 
@@ -44,25 +38,25 @@ describe('Validation Hints in stringify()', () => {
         })
         .validate(obj => obj.name.length > 0);
 
-      assert.strictEqual(
+      assert.equal(
         userSchema.stringify(),
-        '{ name: string, age: number } /* obj => obj.name.length > 0 */'
+        '{ name: string, age: number } /* obj=>obj.name.length>0 */'
       );
     });
   });
 
   describe('Complex validation functions', () => {
     test('should stringify complex string validations', () => {
-      const complexEmailSchema = s.string().validate(value => {
-        return value.includes('@') && value.includes('.') && value.length > 5;
+      const complexEmailSchema = s.string().validate(ces => {
+        return ces.includes('@') && ces.includes('.') && ces.length > 5;
       });
 
       const result = complexEmailSchema.stringify();
-      assert.ok(result.startsWith('string /* '));
-      assert.ok(result.includes("value.includes('@')"));
-      assert.ok(result.includes("value.includes('.')"));
-      assert.ok(result.includes('value.length>5'));
-      assert.ok(result.endsWith(' */'));
+
+      assert.equal(
+        result,
+        'string /* ces=>{return ces.includes("@")&&ces.includes(".")&&ces.length>5} */'
+      );
     });
 
     test('should stringify complex number validations', () => {
@@ -109,11 +103,10 @@ describe('Validation Hints in stringify()', () => {
       });
 
       const result = userSchema.stringify();
-      assert.ok(result.includes('name: string /* value=>value.length>=2 */'));
-      assert.ok(
-        result.includes("email: string /* value=>value.includes('@') */")
+      assert.equal(
+        result,
+        '{ name: string /* value=>value.length>=2 */, email: string /* value=>value.includes("@") */, age: number /* value=>value>=18 */ }'
       );
-      assert.ok(result.includes('age: number /* value=>value>=18 */'));
     });
 
     test('should include validation hints for nested arrays', () => {
@@ -127,11 +120,10 @@ describe('Validation Hints in stringify()', () => {
         .validate(arr => arr.length > 0);
 
       const result = arraySchema.stringify();
-      assert.ok(
-        result.includes("id: string /* value=>value.startsWith('ID-') */")
+      assert.equal(
+        result,
+        '[{ id: string /* value=>value.startsWith("ID-") */, count: number /* value=>value>0 */ }] /* arr=>arr.length>0 */'
       );
-      assert.ok(result.includes('count: number /* value=>value>0 */'));
-      assert.ok(result.includes('}] /* arr=>arr.length>0 */'));
     });
 
     test('should handle deeply nested validation', () => {
@@ -147,19 +139,20 @@ describe('Validation Hints in stringify()', () => {
       });
 
       const result = deepSchema.stringify();
-      assert.ok(result.includes('name: string /* value=>value.length>0 */'));
-      assert.ok(result.includes('age: number /* value=>value>=0 */'));
-      assert.ok(result.includes('} /* profile=>profile.name!=="admin" */'));
+      assert.equal(
+        result,
+        '{ user: { profile: { name: string /* value=>value.length>0 */, age: number /* value=>value>=0 */ } /* profile=>profile.name!=="admin" */ } }'
+      );
     });
   });
 
   describe('No validation function', () => {
     test('should not include validation hints when no validation function is provided', () => {
-      assert.strictEqual(s.string().stringify(), 'string');
-      assert.strictEqual(s.number().stringify(), 'number');
-      assert.strictEqual(s.boolean().stringify(), 'boolean');
-      assert.strictEqual(s.array(s.string()).stringify(), '[string]');
-      assert.strictEqual(
+      assert.equal(s.string().stringify(), 'string');
+      assert.equal(s.number().stringify(), 'number');
+      assert.equal(s.boolean().stringify(), 'boolean');
+      assert.equal(s.array(s.string()).stringify(), '[string]');
+      assert.equal(
         s.object({ name: s.string() }).stringify(),
         '{ name: string }'
       );
@@ -171,107 +164,92 @@ describe('Validation Hints in stringify()', () => {
       const userRegistrationSchema = s.object({
         username: s
           .string()
-          .validate(value => value.length >= 3 && value.length <= 20),
-        email: s
-          .string()
-          .validate(value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)),
-        password: s.string().validate(value => value.length >= 8),
-        age: s.number().validate(value => value >= 13),
-        termsAccepted: s.boolean().validate(value => value === true),
+          .validate(uname => uname.length >= 3 && uname.length <= 20),
+        email: s.string().validate(email => email.endsWith('@example.com')),
+        password: s.string().validate(pass => pass.length >= 8),
+        age: s.number().validate(age => age >= 13),
+        termsAccepted: s.boolean().validate(accepted => accepted === true),
       });
 
       const result = userRegistrationSchema.stringify();
 
-      // Check that validation hints are present
-      assert.ok(result.includes('username: string /* '));
-      assert.ok(result.includes('email: string /* '));
-      assert.ok(result.includes('password: string /* '));
-      assert.ok(result.includes('age: number /* '));
-      assert.ok(result.includes('termsAccepted: boolean /* '));
-
-      // Check specific validation logic
-      assert.ok(result.includes('value.length>=3'));
-      assert.ok(result.includes('value.length<=20'));
-      assert.ok(result.includes('/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/'));
-      assert.ok(result.includes('value.length>=8'));
-      assert.ok(result.includes('value>=13'));
-      assert.ok(result.includes('value===true'));
-    });
-
-    test('should generate validation hints for e-commerce order schema', () => {
-      const orderSchema = s.object({
-        orderId: s.string().validate(value => value.startsWith('ORD-')),
-        items: s
-          .array(
-            s.object({
-              productId: s.string().validate(value => value.length > 0),
-              quantity: s
-                .number()
-                .validate(value => value > 0 && Math.floor(value) === value),
-              price: s.number().validate(value => value > 0),
-            })
-          )
-          .validate(arr => arr.length > 0),
-        total: s.number().validate(value => value > 0),
-        status: s
-          .string()
-          .validate(value =>
-            ['pending', 'processing', 'shipped', 'delivered'].includes(value)
-          ),
-      });
-
-      const result = orderSchema.stringify();
-
-      // Check validation hints are present
       assert.ok(
         result.includes(
-          "orderId: string /* value => value.startsWith('ORD-') */"
+          'username: string /* uname=>uname.length>=3&&uname.length<=20 */'
         )
       );
       assert.ok(
-        result.includes('productId: string /* value => value.length > 0 */')
-      );
-      assert.ok(
         result.includes(
-          'quantity: number /* value => value > 0 && Math.floor(value) === value */'
+          'email: string /* email=>email.endsWith("@example.com") */'
         )
       );
-      assert.ok(result.includes('price: number /* value => value > 0 */'));
-      assert.ok(result.includes('total: number /* value => value > 0 */'));
+      assert.ok(result.includes('password: string /* pass=>pass.length>=8 */'));
+      assert.ok(result.includes('age: number /* age=>age>=13 */'));
       assert.ok(
         result.includes(
-          "status: string /* value => ['pending', 'processing', 'shipped', 'delivered'].includes(value) */"
+          'termsAccepted: boolean /* accepted=>accepted===true */'
         )
       );
-      assert.ok(result.includes('}] /* arr => arr.length > 0 */'));
     });
   });
 
-  describe('Function stringification edge cases', () => {
-    test('should handle functions with special characters', () => {
-      const schema = s
+  test('should generate validation hints for e-commerce order schema', () => {
+    const orderSchema = s.object({
+      orderId: s.string().validate(value => value.startsWith('ORD-')),
+      items: s
+        .array(
+          s.object({
+            productId: s.string().validate(value => value.length > 0),
+            quantity: s
+              .number()
+              .validate(value => value > 0 && Math.floor(value) === value),
+            price: s.number().validate(value => value > 0),
+          })
+        )
+        .validate(arr => arr.length > 0),
+      total: s.number().validate(value => value > 0),
+      status: s
         .string()
-        .validate(value => value.includes('$') && value.includes('€'));
-      const result = schema.stringify();
-      assert.ok(result.includes("value.includes('$')"));
-      assert.ok(result.includes("value.includes('€')"));
+        .validate(value =>
+          ['pending', 'processing', 'shipped', 'delivered'].includes(value)
+        ),
     });
 
-    test('should handle functions with quotes', () => {
-      const schema = s
-        .string()
-        .validate(value => value.includes('"') || value.includes("'"));
-      const result = schema.stringify();
-      assert.ok(result.includes('string /* '));
-      assert.ok(result.endsWith(' */'));
-    });
+    const result = orderSchema.stringify();
 
-    test('should handle functions with regex patterns', () => {
-      const schema = s
-        .string()
-        .validate(value => /^\d{4}-\d{2}-\d{2}$/.test(value));
-      const result = schema.stringify();
-      assert.ok(result.includes('/^\\d{4}-\\d{2}-\\d{2}$/'));
-    });
+    assert.equal(
+      result,
+      '{ orderId: string /* value=>value.startsWith("ORD-") */, items: [{ productId: string /* value=>value.length>0 */, quantity: number /* value=>value>0&&Math.floor(value)===value */, price: number /* value=>value>0 */ }] /* arr=>arr.length>0 */, total: number /* value=>value>0 */, status: string /* value=>["pending","processing","shipped","delivered"].includes(value) */ }'
+    );
+  });
+});
+
+describe('Function stringification edge cases', () => {
+  test('should handle functions with special characters', () => {
+    const schema = s.string().validate(value => value.includes('$'));
+    const result = schema.stringify();
+    assert.equal(result, 'string /* value=>value.includes("$") */');
+  });
+
+  test('should handle functions with regex patterns', () => {
+    const schema = s
+      .string()
+      .validate(value => /^\d{4}-\d{2}-\d{2}$/.test(value));
+    const result = schema.stringify();
+    assert.equal(
+      result,
+      'string /* value=>/^\\d{4}-\\d{2}-\\d{2}$/.test(value) */'
+    );
+  });
+
+  test('should handle functions with multiple conditions', () => {
+    const schema = s
+      .string()
+      .validate(value => value.includes('@') && value.length > 5);
+    const result = schema.stringify();
+    assert.equal(
+      result,
+      'string /* value=>value.includes("@")&&value.length>5 */'
+    );
   });
 });

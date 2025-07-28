@@ -3,10 +3,20 @@ import { Schema } from './types';
 export class StringSchema extends Schema<string> {
   stringify(): string {
     const baseType = 'string';
+    const hints = [];
+
     if (this.validationFn) {
-      const fnString = this.validationFn.toString();
-      return `${baseType} /* ${fnString} */`;
+      hints.push(this.validationFn.toString());
     }
+
+    if (this.isOptional) {
+      hints.push('optional');
+    }
+
+    if (hints.length > 0) {
+      return `${baseType} /* ${hints.join(', ')} */`;
+    }
+
     return baseType;
   }
 
@@ -15,17 +25,19 @@ export class StringSchema extends Schema<string> {
     try {
       parsed = JSON.parse(jsonString);
     } catch (error) {
-      throw new Error(`Invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-    
+
     if (typeof parsed !== 'string') {
       throw new Error(`Expected string, got ${typeof parsed}`);
     }
-    
+
     if (!this.runValidation(parsed)) {
       throw new Error(`Validation failed for value: ${JSON.stringify(parsed)}`);
     }
-    
+
     return parsed;
   }
 }
@@ -33,10 +45,20 @@ export class StringSchema extends Schema<string> {
 export class NumberSchema extends Schema<number> {
   stringify(): string {
     const baseType = 'number';
+    const hints = [];
+
     if (this.validationFn) {
-      const fnString = this.validationFn.toString();
-      return `${baseType} /* ${fnString} */`;
+      hints.push(this.validationFn.toString());
     }
+
+    if (this.isOptional) {
+      hints.push('optional');
+    }
+
+    if (hints.length > 0) {
+      return `${baseType} /* ${hints.join(', ')} */`;
+    }
+
     return baseType;
   }
 
@@ -45,17 +67,19 @@ export class NumberSchema extends Schema<number> {
     try {
       parsed = JSON.parse(jsonString);
     } catch (error) {
-      throw new Error(`Invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-    
+
     if (typeof parsed !== 'number') {
       throw new Error(`Expected number, got ${typeof parsed}`);
     }
-    
+
     if (!this.runValidation(parsed)) {
       throw new Error(`Validation failed for value: ${JSON.stringify(parsed)}`);
     }
-    
+
     return parsed;
   }
 }
@@ -63,10 +87,20 @@ export class NumberSchema extends Schema<number> {
 export class BooleanSchema extends Schema<boolean> {
   stringify(): string {
     const baseType = 'boolean';
+    const hints = [];
+
     if (this.validationFn) {
-      const fnString = this.validationFn.toString();
-      return `${baseType} /* ${fnString} */`;
+      hints.push(this.validationFn.toString());
     }
+
+    if (this.isOptional) {
+      hints.push('optional');
+    }
+
+    if (hints.length > 0) {
+      return `${baseType} /* ${hints.join(', ')} */`;
+    }
+
     return baseType;
   }
 
@@ -75,17 +109,19 @@ export class BooleanSchema extends Schema<boolean> {
     try {
       parsed = JSON.parse(jsonString);
     } catch (error) {
-      throw new Error(`Invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-    
+
     if (typeof parsed !== 'boolean') {
       throw new Error(`Expected boolean, got ${typeof parsed}`);
     }
-    
+
     if (!this.runValidation(parsed)) {
       throw new Error(`Validation failed for value: ${JSON.stringify(parsed)}`);
     }
-    
+
     return parsed;
   }
 }
@@ -94,13 +130,23 @@ export class ArraySchema<T> extends Schema<T[]> {
   constructor(private itemSchema: Schema<T>) {
     super();
   }
-  
+
   stringify(): string {
     const baseType = `[${this.itemSchema.stringify()}]`;
+    const hints = [];
+
     if (this.validationFn) {
-      const fnString = this.validationFn.toString();
-      return `${baseType} /* ${fnString} */`;
+      hints.push(this.validationFn.toString());
     }
+
+    if (this.isOptional) {
+      hints.push('optional');
+    }
+
+    if (hints.length > 0) {
+      return `${baseType} /* ${hints.join(', ')} */`;
+    }
+
     return baseType;
   }
 
@@ -109,13 +155,15 @@ export class ArraySchema<T> extends Schema<T[]> {
     try {
       parsed = JSON.parse(jsonString);
     } catch (error) {
-      throw new Error(`Invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-    
+
     if (!Array.isArray(parsed)) {
       throw new Error(`Expected array, got ${typeof parsed}`);
     }
-    
+
     const result: T[] = [];
     for (let i = 0; i < parsed.length; i++) {
       try {
@@ -123,14 +171,18 @@ export class ArraySchema<T> extends Schema<T[]> {
         const parsedItem = this.itemSchema.parse(itemJsonString);
         result.push(parsedItem);
       } catch (error) {
-        throw new Error(`Array item at index ${i}: ${error instanceof Error ? error.message : String(error)}`);
+        throw new Error(
+          `Array item at index ${i}: ${error instanceof Error ? error.message : String(error)}`
+        );
       }
     }
-    
+
     if (!this.runValidation(result)) {
-      throw new Error(`Array validation failed for value: ${JSON.stringify(result)}`);
+      throw new Error(
+        `Array validation failed for value: ${JSON.stringify(result)}`
+      );
     }
-    
+
     return result;
   }
 }
@@ -139,17 +191,26 @@ export class ObjectSchema<T extends Record<string, any>> extends Schema<T> {
   constructor(private shape: { [K in keyof T]: Schema<T[K]> }) {
     super();
   }
-  
+
   stringify(): string {
     const entries = Object.entries(this.shape).map(([key, schema]) => {
       return `${key}: ${(schema as Schema).stringify()}`;
     });
     const baseType = `{ ${entries.join(', ')} }`;
-    
+    const hints = [];
+
     if (this.validationFn) {
-      const fnString = this.validationFn.toString();
-      return `${baseType} /* ${fnString} */`;
+      hints.push(this.validationFn.toString());
     }
+
+    if (this.isOptional) {
+      hints.push('optional');
+    }
+
+    if (hints.length > 0) {
+      return `${baseType} /* ${hints.join(', ')} */`;
+    }
+
     return baseType;
   }
 
@@ -158,33 +219,49 @@ export class ObjectSchema<T extends Record<string, any>> extends Schema<T> {
     try {
       parsed = JSON.parse(jsonString);
     } catch (error) {
-      throw new Error(`Invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-    
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      throw new Error(`Expected object, got ${Array.isArray(parsed) ? 'array' : typeof parsed}`);
+
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      Array.isArray(parsed)
+    ) {
+      throw new Error(
+        `Expected object, got ${Array.isArray(parsed) ? 'array' : typeof parsed}`
+      );
     }
-    
+
     const result: any = {};
     const parsedObj = parsed as Record<string, unknown>;
-    
+
     for (const [key, schema] of Object.entries(this.shape)) {
       if (!(key in parsedObj)) {
+        if ((schema as Schema).isOptional) {
+          // Skip optional properties that are missing
+          continue;
+        }
         throw new Error(`Missing required property: ${key}`);
       }
-      
+
       try {
         const propertyJsonString = JSON.stringify(parsedObj[key]);
         result[key] = (schema as Schema).parse(propertyJsonString);
       } catch (error) {
-        throw new Error(`Property '${key}': ${error instanceof Error ? error.message : String(error)}`);
+        throw new Error(
+          `Property '${key}': ${error instanceof Error ? error.message : String(error)}`
+        );
       }
     }
-    
+
     if (!this.runValidation(result as T)) {
-      throw new Error(`Object validation failed for value: ${JSON.stringify(result)}`);
+      throw new Error(
+        `Object validation failed for value: ${JSON.stringify(result)}`
+      );
     }
-    
+
     return result as T;
   }
 }
@@ -197,6 +274,9 @@ type InferObjectType<T extends Record<string, Schema<any>>> = {
 export const string = () => new StringSchema();
 export const number = () => new NumberSchema();
 export const boolean = () => new BooleanSchema();
-export const array = <T>(itemSchema: Schema<T>) => new ArraySchema<T>(itemSchema);
-export const object = <T extends Record<string, Schema<any>>>(shape: T) => 
-  new ObjectSchema<InferObjectType<T>>(shape as { [K in keyof InferObjectType<T>]: Schema<InferObjectType<T>[K]> });
+export const array = <T>(itemSchema: Schema<T>) =>
+  new ArraySchema<T>(itemSchema);
+export const object = <T extends Record<string, Schema<any>>>(shape: T) =>
+  new ObjectSchema<InferObjectType<T>>(
+    shape as { [K in keyof InferObjectType<T>]: Schema<InferObjectType<T>[K]> }
+  );

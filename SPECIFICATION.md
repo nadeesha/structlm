@@ -124,6 +124,77 @@ s.string().validate(value => ['red', 'green', 'blue'].includes(value)).stringify
 // "string /* value=>["red","green","blue"].includes(value) */"
 ```
 
+### Optional Fields
+
+Optional fields are marked with the `optional` keyword in validation comments, alongside any validation functions:
+
+#### Basic Optional Fields
+```typescript
+s.string().optional().stringify()
+// Output: "string /* optional */"
+
+s.number().optional().stringify()
+// Output: "number /* optional */"
+
+s.boolean().optional().stringify()
+// Output: "boolean /* optional */"
+
+s.array(s.string()).optional().stringify()
+// Output: "[string] /* optional */"
+```
+
+#### Optional Fields with Validation
+When both validation and optional are present, they are combined with comma separation:
+
+```typescript
+s.string().validate(value => value.length > 0).optional().stringify()
+// Output: "string /* value=>value.length>0, optional */"
+
+s.string().optional().validate(value => value.includes('@')).stringify()
+// Output: "string /* value=>value.includes("@"), optional */"
+
+s.number().validate(n => n >= 0 && n <= 100).optional().stringify()
+// Output: "number /* n=>n>=0&&n<=100, optional */"
+```
+
+#### Optional Objects and Arrays
+Complex types can also be optional:
+
+```typescript
+s.object({
+  name: s.string(),
+  age: s.number()
+}).optional().stringify()
+// Output: "{ name: string, age: number } /* optional */"
+
+s.array(s.object({
+  id: s.string(),
+  value: s.number()
+})).validate(arr => arr.length > 0).optional().stringify()
+// Output: "[{ id: string, value: number }] /* arr=>arr.length>0, optional */"
+```
+
+### Parsing Behavior for Optional Fields
+
+Optional fields modify parsing behavior:
+- **Present in input**: Field is validated normally
+- **Missing from input**: Field is omitted from the result (no validation performed)
+- **Required fields missing**: Throws validation error
+
+```typescript
+const schema = s.object({
+  name: s.string(),
+  age: s.number().optional(),
+  email: s.string().validate(e => e.includes('@')).optional()
+});
+
+// All valid inputs:
+schema.parse('{"name":"John"}');                                    // { name: "John" }
+schema.parse('{"name":"John","age":30}');                          // { name: "John", age: 30 }
+schema.parse('{"name":"John","email":"john@example.com"}');        // { name: "John", email: "john@example.com" }
+schema.parse('{"name":"John","age":30,"email":"john@example.com"}'); // All fields present
+```
+
 ## Formatting Rules
 
 ### Spacing
@@ -236,6 +307,49 @@ booksSchema.stringify()
     inStock: boolean 
   }] /* arr=>arr.length>0 */ }
 ```
+
+### Object with Optional Fields
+```typescript
+const userProfileSchema = s.object({
+  id: s.string(),
+  username: s.string().validate(value => value.length >= 3),
+  email: s.string().validate(value => value.includes('@')),
+  age: s.number().validate(value => value >= 18).optional(),
+  bio: s.string().validate(value => value.length <= 500).optional(),
+  avatar: s.string().optional(),
+  preferences: s.object({
+    theme: s.string().validate(value => ['light', 'dark'].includes(value)),
+    notifications: s.boolean().optional()
+  }).optional(),
+  tags: s.array(s.string()).validate(arr => arr.length <= 10).optional()
+});
+
+userProfileSchema.stringify()
+```
+
+**Output**:
+```
+{ 
+  id: string, 
+  username: string /* value=>value.length>=3 */, 
+  email: string /* value=>value.includes("@") */, 
+  age: number /* value=>value>=18, optional */, 
+  bio: string /* value=>value.length<=500, optional */, 
+  avatar: string /* optional */, 
+  preferences: { 
+    theme: string /* value=>["light","dark"].includes(value) */, 
+    notifications: boolean /* optional */ 
+  } /* optional */, 
+  tags: [string] /* arr=>arr.length<=10, optional */ 
+}
+```
+
+This example demonstrates:
+- **Required fields**: `id`, `username`, `email`
+- **Optional fields with validation**: `age`, `bio`, `tags`
+- **Optional fields without validation**: `avatar`
+- **Optional nested objects**: `preferences`
+- **Optional fields within nested objects**: `notifications`
 
 ## Token Efficiency
 

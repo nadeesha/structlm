@@ -82,7 +82,7 @@ import { s } from 'structlm';
 const contactSchema = s.object({
   name: s.string(),
   email: s.string().validate(email => email.includes('@')),
-  phone: s.string(),
+  phone: s.string().optional(),
   company: s.string()
 });
 
@@ -98,7 +98,7 @@ Text: "${text}"
 Return only the JSON object, no additional text.`;
 
 // The schema.stringify() outputs: 
-// { name: string, email: string /* email=>email.includes('@') */, phone: string, company: string }
+// { name: string, email: string /* email=>email.includes('@') */, phone: string /* optional */, company: string }
 
 // 3. Send prompt to LLM (the LLM returns this JSON string)
 const llmResponse = `{
@@ -224,6 +224,26 @@ const userSchema = s.object({
   age: s.number().validate(age => age >= 0),
   username: s.string().validate(name => name.length >= 3)
 });
+```
+
+#### `.optional()`
+Makes a field optional in object schemas.
+
+```typescript
+const userSchema = s.object({
+  name: s.string(),
+  age: s.number().optional(),
+  bio: s.string().validate(bio => bio.length <= 500).optional(),
+  tags: s.array(s.string()).optional()
+});
+
+console.log(userSchema.stringify());
+// Output: "{ name: string, age: number /* optional */, bio: string /* bio=>bio.length<=500, optional */, tags: [string] /* optional */ }"
+
+// All these are valid:
+userSchema.parse('{"name":"John"}');
+userSchema.parse('{"name":"John","age":30}');
+userSchema.parse('{"name":"John","age":30,"bio":"Developer","tags":["js","ts"]}');
 ```
 
 ## Type Inference
@@ -387,13 +407,18 @@ A: Yes! StructLM is a lightweight TypeScript library with zero dependencies that
 ### **Schema Definition**
 
 #### **Q: How do I make a field optional?**
-A: Currently, all fields in StructLM objects are required. Optional fields support is planned for future releases. For now, you can use validation to allow empty/null values:
+A: Use the `.optional()` method on any field:
 ```typescript
 const schema = s.object({
-  requiredField: s.string(),
-  optionalField: s.string().validate(val => val === "" || val.length > 0)
+  name: s.string(),
+  age: s.number().optional(),
+  email: s.string().validate(e => e.includes('@')).optional()
 });
+
+// Outputs: { name: string, age: number /* optional */, email: string /* e=>e.includes("@"), optional */ }
 ```
+
+Optional fields are excluded from validation when missing from the input data.
 
 #### **Q: Can I use unions/discriminated unions like in Zod?**
 A: Union types are not currently supported but are on the roadmap. For now, use string validation with enums:
