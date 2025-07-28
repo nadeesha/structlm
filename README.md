@@ -506,14 +506,6 @@ A: Validation functions are serialized as text hints for LLMs but only enforced 
 - Doesn't reference external variables
 - Is readable when converted to string
 
-#### **Q: My LLM keeps returning invalid JSON. What should I do?**
-A: Try these approaches:
-1. Simplify your schema
-2. Add explicit instructions: "Return valid JSON only"
-3. Use a more capable model
-4. Add example valid responses to your prompt
-5. Implement retry logic with error feedback
-
 #### **Q: Can I see what the validation hints look like?**
 A: Yes! Use `.stringify()` to see exactly what gets sent to the LLM:
 ```typescript
