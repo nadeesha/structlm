@@ -2,33 +2,11 @@ import { Schema } from './types';
 
 export class StringSchema extends Schema<string> {
   stringify(): string {
-    const baseType = 'string';
-    const hints = [];
-
-    if (this.validationFn) {
-      hints.push(this.validationFn.toString());
-    }
-
-    if (this.isOptional) {
-      hints.push('optional');
-    }
-
-    if (hints.length > 0) {
-      return `${baseType} /* ${hints.join(', ')} */`;
-    }
-
-    return baseType;
+    return this.buildStringifyResult('string');
   }
 
   parse(jsonString: string): string {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonString);
-    } catch (error) {
-      throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    const parsed = this.parseJson(jsonString);
 
     if (typeof parsed !== 'string') {
       throw new Error(`Expected string, got ${typeof parsed}`);
@@ -44,33 +22,11 @@ export class StringSchema extends Schema<string> {
 
 export class NumberSchema extends Schema<number> {
   stringify(): string {
-    const baseType = 'number';
-    const hints = [];
-
-    if (this.validationFn) {
-      hints.push(this.validationFn.toString());
-    }
-
-    if (this.isOptional) {
-      hints.push('optional');
-    }
-
-    if (hints.length > 0) {
-      return `${baseType} /* ${hints.join(', ')} */`;
-    }
-
-    return baseType;
+    return this.buildStringifyResult('number');
   }
 
   parse(jsonString: string): number {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonString);
-    } catch (error) {
-      throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    const parsed = this.parseJson(jsonString);
 
     if (typeof parsed !== 'number') {
       throw new Error(`Expected number, got ${typeof parsed}`);
@@ -86,33 +42,11 @@ export class NumberSchema extends Schema<number> {
 
 export class BooleanSchema extends Schema<boolean> {
   stringify(): string {
-    const baseType = 'boolean';
-    const hints = [];
-
-    if (this.validationFn) {
-      hints.push(this.validationFn.toString());
-    }
-
-    if (this.isOptional) {
-      hints.push('optional');
-    }
-
-    if (hints.length > 0) {
-      return `${baseType} /* ${hints.join(', ')} */`;
-    }
-
-    return baseType;
+    return this.buildStringifyResult('boolean');
   }
 
   parse(jsonString: string): boolean {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonString);
-    } catch (error) {
-      throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    const parsed = this.parseJson(jsonString);
 
     if (typeof parsed !== 'boolean') {
       throw new Error(`Expected boolean, got ${typeof parsed}`);
@@ -133,32 +67,11 @@ export class ArraySchema<T> extends Schema<T[]> {
 
   stringify(): string {
     const baseType = `[${this.itemSchema.stringify()}]`;
-    const hints = [];
-
-    if (this.validationFn) {
-      hints.push(this.validationFn.toString());
-    }
-
-    if (this.isOptional) {
-      hints.push('optional');
-    }
-
-    if (hints.length > 0) {
-      return `${baseType} /* ${hints.join(', ')} */`;
-    }
-
-    return baseType;
+    return this.buildStringifyResult(baseType);
   }
 
   parse(jsonString: string): T[] {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonString);
-    } catch (error) {
-      throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    const parsed = this.parseJson(jsonString);
 
     if (!Array.isArray(parsed)) {
       throw new Error(`Expected array, got ${typeof parsed}`);
@@ -197,32 +110,11 @@ export class ObjectSchema<T extends Record<string, any>> extends Schema<T> {
       return `${key}: ${(schema as Schema).stringify()}`;
     });
     const baseType = `{ ${entries.join(', ')} }`;
-    const hints = [];
-
-    if (this.validationFn) {
-      hints.push(this.validationFn.toString());
-    }
-
-    if (this.isOptional) {
-      hints.push('optional');
-    }
-
-    if (hints.length > 0) {
-      return `${baseType} /* ${hints.join(', ')} */`;
-    }
-
-    return baseType;
+    return this.buildStringifyResult(baseType);
   }
 
   parse(jsonString: string): T {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonString);
-    } catch (error) {
-      throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    const parsed = this.parseJson(jsonString);
 
     if (
       typeof parsed !== 'object' ||
